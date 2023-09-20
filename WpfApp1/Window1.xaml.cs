@@ -19,9 +19,34 @@ namespace WpfApp1
     /// </summary>
     public partial class Window1 : Window
     {
-        public Window1()
+        MainWindow mainWindow;
+        BitmapImage? currentImage;
+
+        public Window1(MainWindow mainWindow)
         {
+            this.mainWindow = mainWindow;
             InitializeComponent();
+        }
+
+        private void Preview_Image(object sender, RoutedEventArgs e)
+        {
+            currentImage = new BitmapImage(new Uri(linkText.Text));
+            {
+                previewImage.Source = currentImage;
+
+                //Trace.WriteLine($"{bitmap.Height} {bitmap.Width} {Imported_image.ActualHeight} {Imported_image.ActualWidth}");
+                proceedButton.Visibility = Visibility.Visible;
+            }
+            
+        }
+
+        private void Proceed(object sender, RoutedEventArgs e)
+        {
+            if(currentImage != null)
+            {
+                mainWindow.SetImage(currentImage);
+                this.Close();
+            }
         }
     }
 }

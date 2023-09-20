@@ -7,9 +7,40 @@
         mc:Ignorable="d"
         Title="Window1" Height="450" Width="800">
     <Grid>
-        <TextBox HorizontalAlignment="Left" Margin="10,10,0,0" TextWrapping="Wrap" Text="Enter Image link..." VerticalAlignment="Top" Width="490"/>
-        <Button Content="Load and preview" HorizontalAlignment="Left" Margin="510,10,0,0" VerticalAlignment="Top" RenderTransformOrigin="0.631,0.503" Width="115" Height="18"/>
-        <Image HorizontalAlignment="Left" Height="305" Margin="10,39,0,0" VerticalAlignment="Top" Width="490"/>
+        <TextBox Name="linkText" HorizontalAlignment="Left" Margin="10,10,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="490">
+            <TextBox.Style>
+                <Style TargetType="TextBox" xmlns:sys="clr-namespace:System;assembly=mscorlib">
+                    <Style.Resources>
+                        <VisualBrush x:Key="CueBannerBrush" AlignmentX="Left" AlignmentY="Center" Stretch="None">
+                            <VisualBrush.Visual>
+                                <Label Content="Enter Image link..." Foreground="LightGray" />
+                            </VisualBrush.Visual>
+                        </VisualBrush>
+                    </Style.Resources>
+                    <Style.Triggers>
+                        <Trigger Property="Text" Value="{x:Static sys:String.Empty}">
+                            <Setter Property="Background" Value="{StaticResource CueBannerBrush}" />
+                        </Trigger>
+                        <Trigger Property="Text" Value="{x:Null}">
+                            <Setter Property="Background" Value="{StaticResource CueBannerBrush}" />
+                        </Trigger>
+                        <Trigger Property="IsKeyboardFocused" Value="True">
+                            <Setter Property="Background" Value="White" />
+                        </Trigger>
+                    </Style.Triggers>
+                </Style>
+            </TextBox.Style>
+        </TextBox>
+        <Grid>
+            <Grid.RowDefinitions>
+                <RowDefinition/>
+                <RowDefinition/>
+            </Grid.RowDefinitions>
+            <Button Content="Load and preview" HorizontalAlignment="Left" Margin="510,10,0,0" VerticalAlignment="Top" RenderTransformOrigin="0.631,0.503" Width="115" Height="18" Click="Preview_Image"/>
+            <Button Name="proceedButton" Visibility="Hidden" Content="Proceed" HorizontalAlignment="Left" Margin="510,33,0,0" VerticalAlignment="Top" RenderTransformOrigin="0.631,0.503" Width="115" Height="18" Click="Proceed"/>
+        </Grid>
+        
+        <Image Name="previewImage" HorizontalAlignment="Left" Height="305" Margin="10,39,0,0" VerticalAlignment="Top" Width="490"/>
 
     </Grid>
 </Window>

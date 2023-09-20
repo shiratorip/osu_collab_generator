@@ -32,7 +32,7 @@ namespace WpfApp1
         private Button? selectedBut;
         private int selectedButCounter;
 
-        private Uri imageUrl = new Uri("https://a.ppy.sh/8934294?1671397512.png");
+        public BitmapImage? image;
 
         bool imageSelected = false;
 
@@ -79,9 +79,18 @@ namespace WpfApp1
             
         }
 
+        public void SetImage(BitmapImage bitmap)
+        {
+            Imported_image.Source = bitmap;
+            innerGrid.Width = bitmap.Width;
+            innerGrid.Height = bitmap.Height;
+            imageSelected = true;
+            this.image = bitmap;
+        }
+
         private void Open_Image_Browser(object sender, RoutedEventArgs e)
         {
-            Window1 win1 = new Window1();
+            Window1 win1 = new Window1(this);
             win1.Show();
         }
 
@@ -300,7 +309,7 @@ namespace WpfApp1
         private void Export_Collab(object sender, RoutedEventArgs e)
         {
             string exportString = "[imagemap]\n";
-            exportString += $"{imageUrl}\n";
+            exportString += $"{image.UriSource}\n";
             foreach (BoundingBox coords in BoundingBoxes)
             {
                 double left = (coords.left - innerGrid.Margin.Left) / innerGrid.Width * 100;
