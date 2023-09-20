@@ -11,13 +11,13 @@
             <ColumnDefinition Width="11*"/>
             <ColumnDefinition Width="29*"/>
         </Grid.ColumnDefinitions>
-        <Menu HorizontalAlignment="Left" Height="180" VerticalAlignment="Top" Width="132">
+        <Menu HorizontalAlignment="Left" Height="59" VerticalAlignment="Top" Width="120">
             <MenuItem Header="_File">
                 <MenuItem Header="_Open" Click="OpenImage"/>
             </MenuItem>
         </Menu>
 
-        <Grid
+        <Canvas
             x:Name="theGrid"
             MouseDown="Grid_MouseDown"
             MouseUp="Grid_MouseUp"
@@ -27,12 +27,13 @@
             Height="375"
             Width="641"
             HorizontalAlignment="Left"
-            VerticalAlignment="Top" Grid.ColumnSpan="2"
+            VerticalAlignment="Top"
         >
             <Grid
                 Name="innerGrid"
                 Background="#3378c1dc"
                 Margin="20,20,20,20"
+                
             >
                 <Image
                     Name="Imported_image"
@@ -52,9 +53,31 @@
                     StrokeThickness="1"
                 />
             </Canvas>
+        </Canvas>
+        <Button Content="Submit Area" HorizontalAlignment="Left" Margin="0,64,0,0" VerticalAlignment="Top" Width="120" Click="Button_Click"/>
+        <TextBox HorizontalAlignment="Left" Margin="0,89,0,0" TextWrapping="Wrap" Text="type to Search.." VerticalAlignment="Top" Width="120" RenderTransformOrigin="0.5,0.67"/>
+        <Button Content="Apply" HorizontalAlignment="Left" Margin="0,112,0,0" VerticalAlignment="Top" Width="120" Click="Apply_User"/>
+        <Button Name="ExportButton" Content="Export" HorizontalAlignment="Left" Margin="5,347,0,0" VerticalAlignment="Top" Width="120" Height="40" Background="#FF3AC115" Click="Export_Collab"/>
+        <Grid Name="ButtonsGrid" Margin="10,172,100,92" MaxWidth="110" MinWidth="110" MaxHeight="170" MinHeight="170" Background="#FFE1EAED">
+            <Grid.RowDefinitions>
+                <RowDefinition/>
+                <RowDefinition/>
+                <RowDefinition/>
+                <RowDefinition/>
+                <RowDefinition/>
+                <RowDefinition/>
+                <RowDefinition/>
+                <RowDefinition/>
+            </Grid.RowDefinitions>
+            <Grid.ColumnDefinitions>
+                
+                <ColumnDefinition/>
+                <ColumnDefinition/>
+                <ColumnDefinition/>
+                <ColumnDefinition/>
+            </Grid.ColumnDefinitions>
         </Grid>
-        <Button Content="Submit Area" HorizontalAlignment="Left" Margin="0,180,0,0" VerticalAlignment="Top" Width="120" Click="Button_Click"/>
-        <TextBox HorizontalAlignment="Left" Margin="0,217,0,0" TextWrapping="Wrap" Text="type to Search.." VerticalAlignment="Top" Width="120" RenderTransformOrigin="0.5,0.67"/>
-        <Button Content="Apply" HorizontalAlignment="Left" Margin="0,254,0,0" VerticalAlignment="Top" Width="120" Click="Apply_User"/>
+        <TextBlock HorizontalAlignment="Left" Margin="10,392,0,0" TextWrapping="Wrap" Text="" VerticalAlignment="Top" RenderTransformOrigin="0.507,0.754"/>
+        <Button Content="Back/Del" HorizontalAlignment="Left" Margin="10,137,0,0" VerticalAlignment="Top" Height="30" Width="100" Background="#FFD44343"/>
     </Grid>
 </Window>

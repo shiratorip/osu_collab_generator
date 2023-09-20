@@ -23,6 +23,7 @@ namespace WpfApp1
             this.httpClient = httpClient;
         }
 
+#pragma warning disable CS8618 // Dereference of a possibly null reference.
         public static async Task<OsuClient?> Create(HttpClient httpClient, ClientCredentialsGrant credentials)
         {
             string json = JsonConvert.SerializeObject(new Dictionary<string, string>
@@ -39,7 +40,11 @@ namespace WpfApp1
             if(responseMessage.IsSuccessStatusCode)
             {
                 string response = await responseMessage.Content.ReadAsStringAsync();
-                ClientCredentialsGrantResponse resp = JsonConvert.DeserializeObject<ClientCredentialsGrantResponse>(response);
+                ClientCredentialsGrantResponse? resp = JsonConvert.DeserializeObject<ClientCredentialsGrantResponse>(response);
+                if(resp == null || resp.Token == null)
+                {
+                    return null;
+                }
                 httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", resp.Token);
                 return new OsuClient(httpClient);
             }
@@ -239,6 +244,7 @@ namespace WpfApp1
         [JsonProperty("tags")] public string[] Tags { get; set; }
         [JsonProperty("title")] public string Title { get; set; }
     }
+#pragma warning restore CS8618 // Dereference of a possibly null reference.
 
     public record ClientCredentialsGrant(ulong clientId, string clientSecret);
 }

@@ -5,6 +5,7 @@ using System.Windows.Controls;
 using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
+using System.Windows.Threading;
 using Microsoft.Win32;
 using System.Diagnostics;
 using System.Windows.Shapes;
@@ -19,9 +20,15 @@ namespace WpfApp1
     {
         public MainWindow()
         {
-            
             InitializeComponent();
         }
+
+        private bool mouseDown = false;
+        private Point mouseDownPos;
+        private List<SelectionCoordinates> list = new List<SelectionCoordinates>();
+        private SelectionCoordinates? currentSelectionCoordinates;
+
+        private Uri imageUrl = new Uri("https://a.ppy.sh/8934294?1671397512.png");
 
         private readonly OpenFileDialog openImageDialog = new OpenFileDialog
         {
@@ -33,14 +40,30 @@ namespace WpfApp1
         {
             if (openImageDialog.ShowDialog() == true)
             {
+                mouseDown = false;
+                list.Clear();
+                currentSelectionCoordinates = null;
+                StorageCanvas.Children.Clear();
+                selectionBox.Visibility = Visibility.Collapsed;
                 BitmapImage bitmap = new BitmapImage(new Uri(openImageDialog.FileName));
                 Imported_image.Source = bitmap;
-                Trace.WriteLine($"{bitmap.Height} {bitmap.Width} {Imported_image.ActualHeight} {Imported_image.ActualWidth}");
+
+                //Trace.WriteLine($"{bitmap.Height} {bitmap.Width} {Imported_image.ActualHeight} {Imported_image.ActualWidth}");
+                innerGrid.Width = bitmap.Width;
+                innerGrid.Height = bitmap.Height;
+                bitmap.DownloadCompleted += delegate
+                {
+                    Imported_image.Source = bitmap;
+
+                    //Trace.WriteLine($"{bitmap.Height} {bitmap.Width} {Imported_image.ActualHeight} {Imported_image.ActualWidth}");
+                    innerGrid.Width = bitmap.Width;
+                    innerGrid.Height = bitmap.Height;
+                };
             }
+            
         }
 
-        private bool mouseDown = false;
-        private Point mouseDownPos;
+        
 
         private void Grid_MouseDown(object sender, MouseButtonEventArgs e) {
             mouseDown = true;
@@ -85,11 +108,11 @@ namespace WpfApp1
             double heightOverflow = (Canvas.GetTop(selectionBox) - innerGrid.Margin.Top + selectionBox.Height) - innerGrid.ActualHeight;
             if (widthOverflow > 0)
             {
-                selectionBox.Width -= widthOverflow;
+                selectionBox.Width -= Math.Min(widthOverflow, selectionBox.Width);
             }
             if (heightOverflow > 0)
             {
-                selectionBox.Height -= heightOverflow;
+                selectionBox.Height -= Math.Min(heightOverflow, selectionBox.Height);
             }
 
             double left = Canvas.GetLeft(selectionBox);
@@ -137,10 +160,12 @@ namespace WpfApp1
             }
         }
 
-        private List<SelectionCoordinates> list = new List<SelectionCoordinates>();
-        private SelectionCoordinates? currentSelectionCoordinates;
+        private int columnCounter = 0;
+        private int rowCounter = 0;
+        private Rectangle selectedRect;
         private void Button_Click(object sender, RoutedEventArgs e)
-        {
+        {   
+            
             if(currentSelectionCoordinates.HasValue)
             {
                 SelectionCoordinates Box = currentSelectionCoordinates.Value;
@@ -153,69 +178,71 @@ namespace WpfApp1
                     Stroke = Brushes.Blue,
                     StrokeThickness = 2,
                 };
+                
 
                 StorageCanvas.Children.Add(rec);
 
+                Button but = new Button();
+                but.Height = 20;
+                but.Width = 20;
+                
+                Grid.SetColumn(but, columnCounter);
+                Grid.SetRow(but, rowCounter);
+                columnCounter++;
+                if(columnCounter == 4)
+                {
+                    columnCounter = 0;
+                    rowCounter++;
+                }
+                but.Click += delegate
+                {
+                    foreach (Rectangle item in StorageCanvas.Children)
+                    {
+                        item.Stroke = Brushes.Blue;
+                    }
+                    rec.Stroke = Brushes.Red;
+                    
+                };
+                
+                ButtonsGrid.Children.Add(but);
 
                 Canvas.SetTop(rec, Box.top - innerGrid.Margin.Top);
                 Canvas.SetLeft(rec, Box.left - innerGrid.Margin.Left);
             }
         }
+
+       
+
         private void Apply_User(object sender, RoutedEventArgs e)
         {
+            Clipboard.SetText("Test");
 
         }
-    }
-    
-    struct SelectionCoordinates
-    {
-        public double left;
-        public double right;
-        public double bottom;
-        public double top;
 
-        public SelectionCoordinates(double left, double right, double top, double bottom)
+        private void Export_Collab(object sender, RoutedEventArgs e)
         {
-            this.left = left;
-            this.right = right;
-            this.bottom = bottom;
-            this.top = top;
-        }
-       
-        public bool Intersects(SelectionCoordinates other)
-        {
-            foreach (BoundingPoint point in other.GetBoundingPoints())
+            string exportString = "[imagemap]\n";
+            exportString += $"{imageUrl}\n";
+            foreach (SelectionCoordinates coords in list)
             {
-                if(this.Contains(point))
-                {
-                    return true;
-                }
+                double left = (coords.left - innerGrid.Margin.Left) / innerGrid.Width * 100;
+                double top = (coords.top - innerGrid.Margin.Top) / innerGrid.Height * 100;
+                double width = (coords.right - coords.left) / innerGrid.Width * 100;
+                double height = (coords.bottom - coords.top) / innerGrid.Height * 100;
+                exportString += $"{left} {top} {width} {height} https://osu.ppy.sh/users/8934294 FoLZer\n";
             }
-            foreach (BoundingPoint point in this.GetBoundingPoints())
+            exportString += "[/imagemap]";
+            Clipboard.SetText(exportString);
+            ExportButton.Content = "Collab Exported!";
+            DispatcherTimer timer = new DispatcherTimer();
+            timer.Tick += delegate
             {
-                if (other.Contains(point))
-                {
-                    return true;
-                }
-            }
-            return false;
-        }
-
-        private BoundingPoint[] GetBoundingPoints()
-        {
-            return new BoundingPoint[]{
-                new BoundingPoint(this.left, this.top),
-                new BoundingPoint(this.right, this.top),
-                new BoundingPoint(this.right, this.bottom),
-                new BoundingPoint(this.left, this.bottom)
+                ExportButton.Content = "Export";
+                timer.Stop();
             };
-        }
+            timer.Interval = new TimeSpan(0, 0, 2);
+            timer.Start();
 
-        public bool Contains(BoundingPoint point)
-        {
-            return point.X >= this.left && point.X <= this.right && point.Y >= this.top && point.Y <= this.bottom;
         }
     }
-
-    record BoundingPoint(double X, double Y);
 }
