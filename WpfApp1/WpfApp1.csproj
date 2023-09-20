@@ -8,6 +8,10 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <Compile Remove="SelectionCoordinates.cs" />
+  </ItemGroup>
+
+  <ItemGroup>
     <None Remove="NewFile1.txt" />
     <None Remove="OsuApi\NewFile1.txt" />
   </ItemGroup>

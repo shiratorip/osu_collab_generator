@@ -25,10 +25,16 @@ namespace WpfApp1
 
         private bool mouseDown = false;
         private Point mouseDownPos;
-        private List<SelectionCoordinates> list = new List<SelectionCoordinates>();
-        private SelectionCoordinates? currentSelectionCoordinates;
+        private List<BoundingBox> BoundingBoxes = new List<BoundingBox>();
+        private BoundingBox? currentSelectionCoordinates;
+        private Dictionary<Rectangle, BoundingBox> rectanglesCoordsBinds = new();
+        private Dictionary<Button, Rectangle> butsSelectionsBinds = new();
+        private Button? selectedBut;
+        private int selectedButCounter;
 
         private Uri imageUrl = new Uri("https://a.ppy.sh/8934294?1671397512.png");
+
+        bool imageSelected = false;
 
         private readonly OpenFileDialog openImageDialog = new OpenFileDialog
         {
@@ -41,16 +47,25 @@ namespace WpfApp1
             if (openImageDialog.ShowDialog() == true)
             {
                 mouseDown = false;
-                list.Clear();
+                BoundingBoxes.Clear();
                 currentSelectionCoordinates = null;
                 StorageCanvas.Children.Clear();
                 selectionBox.Visibility = Visibility.Collapsed;
-                BitmapImage bitmap = new BitmapImage(new Uri(openImageDialog.FileName));
-                Imported_image.Source = bitmap;
+                rectanglesCoordsBinds.Clear();
+                butsSelectionsBinds.Clear();
+                selectedBut = null;
+                selectedButCounter = -1;
 
-                //Trace.WriteLine($"{bitmap.Height} {bitmap.Width} {Imported_image.ActualHeight} {Imported_image.ActualWidth}");
-                innerGrid.Width = bitmap.Width;
-                innerGrid.Height = bitmap.Height;
+                BitmapImage bitmap = new BitmapImage(new Uri(openImageDialog.FileName));
+                {
+                    Imported_image.Source = bitmap;
+
+                    //Trace.WriteLine($"{bitmap.Height} {bitmap.Width} {Imported_image.ActualHeight} {Imported_image.ActualWidth}");
+                    innerGrid.Width = bitmap.Width;
+                    innerGrid.Height = bitmap.Height;
+                    imageSelected = true;
+                }
+
                 bitmap.DownloadCompleted += delegate
                 {
                     Imported_image.Source = bitmap;
@@ -58,14 +73,23 @@ namespace WpfApp1
                     //Trace.WriteLine($"{bitmap.Height} {bitmap.Width} {Imported_image.ActualHeight} {Imported_image.ActualWidth}");
                     innerGrid.Width = bitmap.Width;
                     innerGrid.Height = bitmap.Height;
+                    imageSelected = true;
                 };
             }
             
         }
 
-        
+        private void Open_Image_Browser(object sender, RoutedEventArgs e)
+        {
+            Window1 win1 = new Window1();
+            win1.Show();
+        }
 
         private void Grid_MouseDown(object sender, MouseButtonEventArgs e) {
+            if (!imageSelected)
+            {
+                return;
+            }
             mouseDown = true;
             mouseDownPos = e.GetPosition(theGrid);
             theGrid.CaptureMouse();
@@ -80,6 +104,11 @@ namespace WpfApp1
         private void Grid_MouseUp(object sender, MouseButtonEventArgs e) {
             mouseDown = false;
             theGrid.ReleaseMouseCapture();
+
+            if (!imageSelected)
+            {
+                return;
+            }
 
             double selectionBoxLeft = Canvas.GetLeft(selectionBox) - innerGrid.Margin.Left;
             double selectionBoxTop = Canvas.GetTop(selectionBox) - innerGrid.Margin.Top;
@@ -119,8 +148,8 @@ namespace WpfApp1
             double right = left + selectionBox.Width;
             double top = Canvas.GetTop(selectionBox);
             double bottom = top + selectionBox.Height;
-            SelectionCoordinates box = new SelectionCoordinates(left, right, top, bottom);
-            foreach (var rect in list)
+            BoundingBox box = new BoundingBox(left, right, top, bottom);
+            foreach (var rect in BoundingBoxes)
             {
                 if (rect.Intersects(box))
                 {
@@ -132,7 +161,11 @@ namespace WpfApp1
             currentSelectionCoordinates = box;
         }
         private void Grid_MouseMove(object sender, MouseEventArgs e) {
-            if(mouseDown)
+            if (!imageSelected)
+            {
+                return;
+            }
+            if (mouseDown)
             {
                 Point mousePos = e.GetPosition(theGrid);
 
@@ -160,58 +193,103 @@ namespace WpfApp1
             }
         }
 
-        private int columnCounter = 0;
-        private int rowCounter = 0;
-        private Rectangle selectedRect;
         private void Button_Click(object sender, RoutedEventArgs e)
         {   
             
-            if(currentSelectionCoordinates.HasValue)
+            if(currentSelectionCoordinates != null)
             {
-                SelectionCoordinates Box = currentSelectionCoordinates.Value;
-                list.Add(Box);
-                Rectangle rec = new Rectangle()
-                {
-                    Width = selectionBox.Width,
-                    Height = selectionBox.Height,
+                AddButonAndSelect(currentSelectionCoordinates.Value);
 
-                    Stroke = Brushes.Blue,
-                    StrokeThickness = 2,
-                };
-                
+                BoundingBox Box = currentSelectionCoordinates.Value;
+                BoundingBoxes.Add(Box);
 
-                StorageCanvas.Children.Add(rec);
+                selectionBox.Visibility = Visibility.Collapsed;
 
-                Button but = new Button();
-                but.Height = 20;
-                but.Width = 20;
-                
-                Grid.SetColumn(but, columnCounter);
-                Grid.SetRow(but, rowCounter);
-                columnCounter++;
-                if(columnCounter == 4)
-                {
-                    columnCounter = 0;
-                    rowCounter++;
-                }
-                but.Click += delegate
-                {
-                    foreach (Rectangle item in StorageCanvas.Children)
-                    {
-                        item.Stroke = Brushes.Blue;
-                    }
-                    rec.Stroke = Brushes.Red;
-                    
-                };
-                
-                ButtonsGrid.Children.Add(but);
-
-                Canvas.SetTop(rec, Box.top - innerGrid.Margin.Top);
-                Canvas.SetLeft(rec, Box.left - innerGrid.Margin.Left);
+                currentSelectionCoordinates = null;
             }
         }
 
-       
+        private Button AddButton(BoundingBox boundingBox)
+        {
+            Rectangle rec = new Rectangle()
+            {
+                Width = selectionBox.Width,
+                Height = selectionBox.Height,
+
+                Stroke = Brushes.Blue,
+                StrokeThickness = 2,
+            };
+            StorageCanvas.Children.Add(rec);
+            Button button = new Button()
+            {
+                Height = 20,
+                Width = 20
+            };
+
+            int currentCounter = ButtonsGrid.Children.Count;
+
+            Grid.SetColumn(button, currentCounter % 5);
+            Grid.SetRow(button, (currentCounter / 5));
+
+            button.Click += delegate
+            {
+                SelectButton(rec, button, currentCounter);
+            };
+            rectanglesCoordsBinds.Add(rec, boundingBox);
+            butsSelectionsBinds.Add(button, rec);
+            ButtonsGrid.Children.Add(button);
+
+            Canvas.SetTop(rec, boundingBox.top - innerGrid.Margin.Top);
+            Canvas.SetLeft(rec, boundingBox.left - innerGrid.Margin.Left);
+
+            return button;
+        }
+
+        private Button AddButonAndSelect(BoundingBox boundingBox)
+        {
+            var button = AddButton(boundingBox);
+            SelectButton(butsSelectionsBinds[button], button, ButtonsGrid.Children.Count - 1);
+            return button;
+        }
+
+        private void SelectButton(Rectangle rec, Button button, int buttonIndex)
+        {
+            foreach (Rectangle item in StorageCanvas.Children)
+            {
+                item.Stroke = Brushes.Blue;
+            }
+            rec.Stroke = Brushes.Red;
+            selectedBut = button;
+            selectedButCounter = buttonIndex;
+        }
+
+        private void Delete_Selection(object sender, RoutedEventArgs e)
+
+        {
+            if(selectedBut != null)
+            {
+                ButtonsGrid.Children.Remove(selectedBut);
+                foreach (Button item in ButtonsGrid.Children)
+                {
+                    int itemCounter = Grid.GetRow(item) * 5 + Grid.GetColumn(item);
+                    if (itemCounter > selectedButCounter)
+                    {
+                        itemCounter--;
+                        int row = itemCounter / 5;
+                        int column = itemCounter % 5;
+                        Grid.SetRow(item, row);
+                        Grid.SetColumn(item, column);
+                    }
+                }
+                var selectedRect = butsSelectionsBinds[selectedBut];
+                StorageCanvas.Children.Remove(selectedRect);
+                BoundingBoxes.Remove(rectanglesCoordsBinds[selectedRect]);
+                rectanglesCoordsBinds.Remove(selectedRect);
+                butsSelectionsBinds.Remove(selectedBut);
+                selectedBut = null;
+                selectedButCounter = -1;
+            }
+        }
 
         private void Apply_User(object sender, RoutedEventArgs e)
         {
@@ -223,7 +301,7 @@ namespace WpfApp1
         {
             string exportString = "[imagemap]\n";
             exportString += $"{imageUrl}\n";
-            foreach (SelectionCoordinates coords in list)
+            foreach (BoundingBox coords in BoundingBoxes)
             {
                 double left = (coords.left - innerGrid.Margin.Left) / innerGrid.Width * 100;
                 double top = (coords.top - innerGrid.Margin.Top) / innerGrid.Height * 100;

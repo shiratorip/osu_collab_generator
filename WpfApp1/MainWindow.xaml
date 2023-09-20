@@ -11,9 +11,10 @@
             <ColumnDefinition Width="11*"/>
             <ColumnDefinition Width="29*"/>
         </Grid.ColumnDefinitions>
-        <Menu HorizontalAlignment="Left" Height="59" VerticalAlignment="Top" Width="120">
-            <MenuItem Header="_File">
-                <MenuItem Header="_Open" Click="OpenImage"/>
+        <Menu HorizontalAlignment="Left" Height="59" VerticalAlignment="Top" Width="120" Margin="5,0,0,0">
+            <MenuItem Header="_Open" Height="24" Width="55" Background="#FFA2A1A1">
+                <MenuItem Header="_File" Click="OpenImage"/>
+                <MenuItem Header="_Link" Click="Open_Image_Browser"/>
             </MenuItem>
         </Menu>
 
@@ -54,9 +55,9 @@
                 />
             </Canvas>
         </Canvas>
-        <Button Content="Submit Area" HorizontalAlignment="Left" Margin="0,64,0,0" VerticalAlignment="Top" Width="120" Click="Button_Click"/>
-        <TextBox HorizontalAlignment="Left" Margin="0,89,0,0" TextWrapping="Wrap" Text="type to Search.." VerticalAlignment="Top" Width="120" RenderTransformOrigin="0.5,0.67"/>
-        <Button Content="Apply" HorizontalAlignment="Left" Margin="0,112,0,0" VerticalAlignment="Top" Width="120" Click="Apply_User"/>
+        <Button Content="Submit Area" HorizontalAlignment="Left" Margin="5,64,0,0" VerticalAlignment="Top" Width="120" Click="Button_Click"/>
+        <TextBox HorizontalAlignment="Left" Margin="5,89,0,0" TextWrapping="Wrap" Text="type to Search.." VerticalAlignment="Top" Width="120" RenderTransformOrigin="0.5,0.67"/>
+        <Button Content="Apply" HorizontalAlignment="Left" Margin="5,112,0,0" VerticalAlignment="Top" Width="120" Click="Apply_User"/>
         <Button Name="ExportButton" Content="Export" HorizontalAlignment="Left" Margin="5,347,0,0" VerticalAlignment="Top" Width="120" Height="40" Background="#FF3AC115" Click="Export_Collab"/>
         <Grid Name="ButtonsGrid" Margin="10,172,100,92" MaxWidth="110" MinWidth="110" MaxHeight="170" MinHeight="170" Background="#FFE1EAED">
             <Grid.RowDefinitions>
@@ -78,6 +79,6 @@
             </Grid.ColumnDefinitions>
         </Grid>
         <TextBlock HorizontalAlignment="Left" Margin="10,392,0,0" TextWrapping="Wrap" Text="" VerticalAlignment="Top" RenderTransformOrigin="0.507,0.754"/>
-        <Button Content="Back/Del" HorizontalAlignment="Left" Margin="10,137,0,0" VerticalAlignment="Top" Height="30" Width="100" Background="#FFD44343"/>
+        <Button Content="Back/Del" HorizontalAlignment="Left" Margin="15,137,0,0" VerticalAlignment="Top" Height="30" Width="100" Background="#FFD44343" Click="Delete_Selection"/>
     </Grid>
 </Window>

@@ -1,13 +1,13 @@
 ﻿namespace WpfApp1
 {
-    struct SelectionCoordinates
+    struct BoundingBox
     {
         public double left;
         public double right;
         public double bottom;
         public double top;
 
-        public SelectionCoordinates(double left, double right, double top, double bottom)
+        public BoundingBox(double left, double right, double top, double bottom)
         {
             this.left = left;
             this.right = right;
@@ -15,7 +15,7 @@
             this.top = top;
         }
 
-        public bool Intersects(SelectionCoordinates other)
+        public bool Intersects(BoundingBox other)
         {
             foreach (BoundingPoint point in other.GetBoundingPoints())
             {
