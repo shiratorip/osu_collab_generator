@@ -7,6 +7,52 @@
         mc:Ignorable="d"
         Title="MainWindow" Height="450" Width="800">
     <Grid>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="11*"/>
+            <ColumnDefinition Width="29*"/>
+        </Grid.ColumnDefinitions>
+        <Menu HorizontalAlignment="Left" Height="180" VerticalAlignment="Top" Width="132">
+            <MenuItem Header="_File">
+                <MenuItem Header="_Open" Click="OpenImage"/>
+            </MenuItem>
+        </Menu>
 
+        <Grid
+            x:Name="theGrid"
+            MouseDown="Grid_MouseDown"
+            MouseUp="Grid_MouseUp"
+            MouseMove="Grid_MouseMove"
+            Background="#33DC7878"
+            Margin="137,12,0,0"
+            Height="375"
+            Width="641"
+            HorizontalAlignment="Left"
+            VerticalAlignment="Top" Grid.ColumnSpan="2"
+        >
+            <Grid
+                Name="innerGrid"
+                Background="#3378c1dc"
+                Margin="20,20,20,20"
+            >
+                <Image
+                    Name="Imported_image"
+                    HorizontalAlignment="Left"
+                    VerticalAlignment="Top"
+                    RenderTransformOrigin="0.5,0.5"
+                    Stretch="None"
+                />
+
+                <Canvas Name="StorageCanvas" />
+            </Grid>
+            <Canvas Name="SelectionBoxCanvas">
+                <Rectangle
+                    Name="selectionBox"
+                    Visibility="Collapsed"
+                    Stroke="Black"
+                    StrokeThickness="1"
+                />
+            </Canvas>
+        </Grid>
+        <Button Content="Submit Area" HorizontalAlignment="Left" Margin="0,180,0,0" VerticalAlignment="Top" Width="118" Click="Button_Click"/>
     </Grid>
 </Window>
