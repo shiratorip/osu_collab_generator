@@ -53,6 +53,8 @@
                 />
             </Canvas>
         </Grid>
-        <Button Content="Submit Area" HorizontalAlignment="Left" Margin="0,180,0,0" VerticalAlignment="Top" Width="118" Click="Button_Click"/>
+        <Button Content="Submit Area" HorizontalAlignment="Left" Margin="0,180,0,0" VerticalAlignment="Top" Width="120" Click="Button_Click"/>
+        <TextBox HorizontalAlignment="Left" Margin="0,217,0,0" TextWrapping="Wrap" Text="type to Search.." VerticalAlignment="Top" Width="120" RenderTransformOrigin="0.5,0.67"/>
+        <Button Content="Apply" HorizontalAlignment="Left" Margin="0,254,0,0" VerticalAlignment="Top" Width="120" Click="Apply_User"/>
     </Grid>
 </Window>

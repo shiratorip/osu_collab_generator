@@ -1,18 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.IO;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
 using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
-using System.Windows.Media.Media3D;
-using System.Windows.Navigation;
 using Microsoft.Win32;
 using System.Diagnostics;
 using System.Windows.Shapes;
@@ -27,6 +19,7 @@ namespace WpfApp1
     {
         public MainWindow()
         {
+            
             InitializeComponent();
         }
 
@@ -65,43 +58,55 @@ namespace WpfApp1
             mouseDown = false;
             theGrid.ReleaseMouseCapture();
 
-
             double selectionBoxLeft = Canvas.GetLeft(selectionBox) - innerGrid.Margin.Left;
-            double selectionBoxWidth = selectionBoxLeft + selectionBox.Width + innerGrid.Margin.Right;
             double selectionBoxTop = Canvas.GetTop(selectionBox) - innerGrid.Margin.Top;
-            double selectionBoxHeight = selectionBoxTop + selectionBox.Height + innerGrid.Margin.Bottom;
-
-            double minusHeight = 0;
-            double minusWidth = 0;
             
             if (selectionBoxLeft < 0)
             {
-                minusWidth -= selectionBoxLeft;
-                selectionBoxLeft = 0;
+                selectionBox.Width += selectionBoxLeft;
+                Canvas.SetLeft(selectionBox, innerGrid.Margin.Left);
             }
-            if (selectionBoxWidth > innerGrid.Width) {
-                minusWidth += selectionBoxWidth - innerGrid.Width;
-                selectionBoxWidth = innerGrid.Width;
-            }
-            if (selectionBoxTop < 0)
+            else
             {
-                minusHeight -= selectionBoxTop;
-                selectionBoxTop = 0;
-            }
-            if (selectionBoxHeight > innerGrid.Height)
-            {
-                minusHeight += selectionBoxHeight - innerGrid.Height;
-                selectionBoxHeight = innerGrid.Height;
+                Canvas.SetLeft(selectionBox, selectionBoxLeft + innerGrid.Margin.Left);
             }
 
-            Canvas.SetLeft(selectionBox, selectionBoxLeft + innerGrid.Margin.Left);
-            //Canvas.SetRight(selectionBox, selectionBoxRight - innerGrid.Margin.Right);
-            selectionBox.Width = selectionBoxWidth - minusWidth;
-            selectionBox.Height = selectionBoxHeight - minusHeight;
-            Canvas.SetTop(selectionBox, selectionBoxTop + innerGrid.Margin.Top);
-            //Canvas.SetBottom(selectionBox, selectionBoxBottom - innerGrid.Margin.Bottom);
-            //selectionBox.Width -= minusWidth;
-            //selectionBox.Height -= minusHeight;
+            if (selectionBoxTop < 0)
+            {
+                selectionBox.Height += selectionBoxTop;
+                Canvas.SetTop(selectionBox, innerGrid.Margin.Top);
+            }
+            else
+            {
+                Canvas.SetTop(selectionBox, selectionBoxTop + innerGrid.Margin.Top);
+            }
+
+            double widthOverflow = (Canvas.GetLeft(selectionBox) - innerGrid.Margin.Left + selectionBox.Width) - innerGrid.ActualWidth;
+            double heightOverflow = (Canvas.GetTop(selectionBox) - innerGrid.Margin.Top + selectionBox.Height) - innerGrid.ActualHeight;
+            if (widthOverflow > 0)
+            {
+                selectionBox.Width -= widthOverflow;
+            }
+            if (heightOverflow > 0)
+            {
+                selectionBox.Height -= heightOverflow;
+            }
+
+            double left = Canvas.GetLeft(selectionBox);
+            double right = left + selectionBox.Width;
+            double top = Canvas.GetTop(selectionBox);
+            double bottom = top + selectionBox.Height;
+            SelectionCoordinates box = new SelectionCoordinates(left, right, top, bottom);
+            foreach (var rect in list)
+            {
+                if (rect.Intersects(box))
+                {
+                    selectionBox.Visibility = Visibility.Collapsed;
+                    currentSelectionCoordinates = null;
+                    return;
+                }
+            }
+            currentSelectionCoordinates = box;
         }
         private void Grid_MouseMove(object sender, MouseEventArgs e) {
             if(mouseDown)
@@ -133,49 +138,32 @@ namespace WpfApp1
         }
 
         private List<SelectionCoordinates> list = new List<SelectionCoordinates>();
-        private double RawBottom;
+        private SelectionCoordinates? currentSelectionCoordinates;
         private void Button_Click(object sender, RoutedEventArgs e)
         {
-            if(selectionBox.Visibility == Visibility.Visible)
+            if(currentSelectionCoordinates.HasValue)
             {
-                double left = Canvas.GetLeft(selectionBox);
-                double right = Canvas.GetRight(selectionBox);
-                double bottom = Canvas.GetBottom(selectionBox);
-                double top = Canvas.GetTop(selectionBox);
-                
-                
-
-                list.Add(new SelectionCoordinates(left, right, bottom, top));
+                SelectionCoordinates Box = currentSelectionCoordinates.Value;
+                list.Add(Box);
                 Rectangle rec = new Rectangle()
                 {
                     Width = selectionBox.Width,
                     Height = selectionBox.Height,
-                    
+
                     Stroke = Brushes.Blue,
                     StrokeThickness = 2,
                 };
-                
+
                 StorageCanvas.Children.Add(rec);
-     
 
-                Canvas.SetTop(rec, top);
-                Canvas.SetLeft(rec, left);
 
+                Canvas.SetTop(rec, Box.top - innerGrid.Margin.Top);
+                Canvas.SetLeft(rec, Box.left - innerGrid.Margin.Left);
             }
         }
-        private bool CheckOverlap(double[] TestedSquare)
+        private void Apply_User(object sender, RoutedEventArgs e)
         {
-            foreach (var rect in list)
-            {
-                TestedSquare[0] = (TestedSquare[0] < rect.right) ?rect.right : TestedSquare[0];
 
-                TestedSquare[1] = (TestedSquare[1] > rect.left) ?rect.left : TestedSquare[1];
-
-                TestedSquare[2] = (TestedSquare[2] < rect.top) ?rect.right : TestedSquare[2];
-
-                TestedSquare[3] = (TestedSquare[3] < rect.bottom) ?rect.right : TestedSquare[3];
-            }
-            return true;
         }
     }
     
@@ -186,12 +174,48 @@ namespace WpfApp1
         public double bottom;
         public double top;
 
-        public SelectionCoordinates(double left, double right, double bottom, double top)
+        public SelectionCoordinates(double left, double right, double top, double bottom)
         {
             this.left = left;
             this.right = right;
             this.bottom = bottom;
             this.top = top;
         }
+       
+        public bool Intersects(SelectionCoordinates other)
+        {
+            foreach (BoundingPoint point in other.GetBoundingPoints())
+            {
+                if(this.Contains(point))
+                {
+                    return true;
+                }
+            }
+            foreach (BoundingPoint point in this.GetBoundingPoints())
+            {
+                if (other.Contains(point))
+                {
+                    return true;
+                }
+            }
+            return false;
+        }
+
+        private BoundingPoint[] GetBoundingPoints()
+        {
+            return new BoundingPoint[]{
+                new BoundingPoint(this.left, this.top),
+                new BoundingPoint(this.right, this.top),
+                new BoundingPoint(this.right, this.bottom),
+                new BoundingPoint(this.left, this.bottom)
+            };
+        }
+
+        public bool Contains(BoundingPoint point)
+        {
+            return point.X >= this.left && point.X <= this.right && point.Y >= this.top && point.Y <= this.bottom;
+        }
     }
+
+    record BoundingPoint(double X, double Y);
 }
