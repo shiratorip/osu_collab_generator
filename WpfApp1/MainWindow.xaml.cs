@@ -88,13 +88,13 @@ namespace WpfApp1
             this.image = bitmap;
         }
 
-        private void Open_Image_Browser(object sender, RoutedEventArgs e)
+        private void OpenImageBrowser(object sender, RoutedEventArgs e)
         {
             Window1 win1 = new Window1(this);
             win1.Show();
         }
 
-        private void Grid_MouseDown(object sender, MouseButtonEventArgs e) {
+        private void GridMouseDown(object sender, MouseButtonEventArgs e) {
             if (!imageSelected)
             {
                 return;
@@ -110,7 +110,7 @@ namespace WpfApp1
 
             selectionBox.Visibility = Visibility.Visible;
         }
-        private void Grid_MouseUp(object sender, MouseButtonEventArgs e) {
+        private void GridMouseUp(object sender, MouseButtonEventArgs e) {
             mouseDown = false;
             theGrid.ReleaseMouseCapture();
 
@@ -169,7 +169,7 @@ namespace WpfApp1
             }
             currentSelectionCoordinates = box;
         }
-        private void Grid_MouseMove(object sender, MouseEventArgs e) {
+        private void GridMouseMove(object sender, MouseEventArgs e) {
             if (!imageSelected)
             {
                 return;
@@ -202,7 +202,7 @@ namespace WpfApp1
             }
         }
 
-        private void Button_Click(object sender, RoutedEventArgs e)
+        private void ButtonClick(object sender, RoutedEventArgs e)
         {   
             
             if(currentSelectionCoordinates != null)
@@ -272,7 +272,7 @@ namespace WpfApp1
             selectedButCounter = buttonIndex;
         }
 
-        private void Delete_Selection(object sender, RoutedEventArgs e)
+        private void DeleteSelection(object sender, RoutedEventArgs e)
 
         {
             if(selectedBut != null)
@@ -300,13 +300,13 @@ namespace WpfApp1
             }
         }
 
-        private void Apply_User(object sender, RoutedEventArgs e)
+        private void ApplyUser(object sender, RoutedEventArgs e)
         {
             Clipboard.SetText("Test");
 
         }
 
-        private void Export_Collab(object sender, RoutedEventArgs e)
+        private void ExportCollab(object sender, RoutedEventArgs e)
         {
             string exportString = "[imagemap]\n";
             exportString += $"{image.UriSource}\n";

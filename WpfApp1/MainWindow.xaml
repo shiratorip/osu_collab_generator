@@ -14,15 +14,15 @@
         <Menu HorizontalAlignment="Left" Height="59" VerticalAlignment="Top" Width="120" Margin="5,0,0,0">
             <MenuItem Header="_Open" Height="24" Width="55" Background="#FFA2A1A1">
                 <MenuItem Header="_File" Click="OpenImage"/>
-                <MenuItem Header="_Link" Click="Open_Image_Browser"/>
+                <MenuItem Header="_Link" Click="OpenImageBrowser"/>
             </MenuItem>
         </Menu>
 
         <Canvas
             x:Name="theGrid"
-            MouseDown="Grid_MouseDown"
-            MouseUp="Grid_MouseUp"
-            MouseMove="Grid_MouseMove"
+            MouseDown="GridMouseDown"
+            MouseUp="GridMouseUp"
+            MouseMove="GridMouseMove"
             Background="#33DC7878"
             Margin="137,12,0,0"
             Height="375"
@@ -55,10 +55,10 @@
                 />
             </Canvas>
         </Canvas>
-        <Button Content="Submit Area" HorizontalAlignment="Left" Margin="5,64,0,0" VerticalAlignment="Top" Width="120" Click="Button_Click"/>
+        <Button Content="Submit Area" HorizontalAlignment="Left" Margin="5,64,0,0" VerticalAlignment="Top" Width="120" Click="ButtonClick"/>
         <TextBox HorizontalAlignment="Left" Margin="5,89,0,0" TextWrapping="Wrap" Text="type to Search.." VerticalAlignment="Top" Width="120" RenderTransformOrigin="0.5,0.67"/>
-        <Button Content="Apply" HorizontalAlignment="Left" Margin="5,112,0,0" VerticalAlignment="Top" Width="120" Click="Apply_User"/>
-        <Button Name="ExportButton" Content="Export" HorizontalAlignment="Left" Margin="5,347,0,0" VerticalAlignment="Top" Width="120" Height="40" Background="#FF3AC115" Click="Export_Collab"/>
+        <Button Content="Apply" HorizontalAlignment="Left" Margin="5,112,0,0" VerticalAlignment="Top" Width="120" Click="ApplyUser"/>
+        <Button Name="ExportButton" Content="Export" HorizontalAlignment="Left" Margin="5,347,0,0" VerticalAlignment="Top" Width="120" Height="40" Background="#FF3AC115" Click="ExportCollab"/>
         <Grid Name="ButtonsGrid" Margin="10,172,100,92" MaxWidth="110" MinWidth="110" MaxHeight="170" MinHeight="170" Background="#FFE1EAED">
             <Grid.RowDefinitions>
                 <RowDefinition/>
@@ -79,6 +79,6 @@
             </Grid.ColumnDefinitions>
         </Grid>
         <TextBlock HorizontalAlignment="Left" Margin="10,392,0,0" TextWrapping="Wrap" Text="" VerticalAlignment="Top" RenderTransformOrigin="0.507,0.754"/>
-        <Button Content="Back/Del" HorizontalAlignment="Left" Margin="15,137,0,0" VerticalAlignment="Top" Height="30" Width="100" Background="#FFD44343" Click="Delete_Selection"/>
+        <Button Content="Back/Del" HorizontalAlignment="Left" Margin="15,137,0,0" VerticalAlignment="Top" Height="30" Width="100" Background="#FFD44343" Click="DeleteSelection"/>
     </Grid>
 </Window>

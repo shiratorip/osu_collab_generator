@@ -36,7 +36,7 @@
                 <RowDefinition/>
                 <RowDefinition/>
             </Grid.RowDefinitions>
-            <Button Content="Load and preview" HorizontalAlignment="Left" Margin="510,10,0,0" VerticalAlignment="Top" RenderTransformOrigin="0.631,0.503" Width="115" Height="18" Click="Preview_Image"/>
+            <Button Content="Load and preview" HorizontalAlignment="Left" Margin="510,10,0,0" VerticalAlignment="Top" RenderTransformOrigin="0.631,0.503" Width="115" Height="18" Click="PreviewImage"/>
             <Button Name="proceedButton" Visibility="Hidden" Content="Proceed" HorizontalAlignment="Left" Margin="510,33,0,0" VerticalAlignment="Top" RenderTransformOrigin="0.631,0.503" Width="115" Height="18" Click="Proceed"/>
         </Grid>
         

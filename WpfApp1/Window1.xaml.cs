@@ -28,7 +28,7 @@ namespace WpfApp1
             InitializeComponent();
         }
 
-        private void Preview_Image(object sender, RoutedEventArgs e)
+        private void PreviewImage(object sender, RoutedEventArgs e)
         {
             currentImage = new BitmapImage(new Uri(linkText.Text));
             {
