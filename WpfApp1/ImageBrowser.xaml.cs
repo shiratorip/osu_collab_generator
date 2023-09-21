@@ -27,6 +27,7 @@ namespace OCG
         {
             this.mainWindow = mainWindow;
             InitializeComponent();
+            EventManager.RegisterClassHandler(typeof(TextBox), TextBox.MouseDoubleClickEvent, new RoutedEventHandler(OnMouseDoubleClick));
         }
 
         private void PreviewImage(object sender, RoutedEventArgs e)
@@ -67,6 +68,12 @@ namespace OCG
                 mainWindow.SetImage(currentImage);
                 this.Close();
             }
+        }
+
+
+        private void OnMouseDoubleClick(object sender, RoutedEventArgs e)
+        {
+            ((TextBox)sender).SelectAll();
         }
     }
 }

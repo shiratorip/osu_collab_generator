@@ -355,5 +355,10 @@ namespace OCG
             timer.Start();
 
         }
+
+        private void MenuItem_Click(object sender, RoutedEventArgs e)
+        {
+
+        }
     }
 }

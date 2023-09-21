@@ -6,13 +6,14 @@
         xmlns:local="clr-namespace:OCG"
         mc:Ignorable="d"
         Title="MainWindow" Height="450" Width="800">
-    <Grid>
+    <Grid Background="#FFD5BBB1">
         <Grid.ColumnDefinitions>
-            <ColumnDefinition Width="11*"/>
-            <ColumnDefinition Width="29*"/>
+            <ColumnDefinition Width="44*"/>
+            <ColumnDefinition Width="103*"/>
+            <ColumnDefinition Width="13*"/>
         </Grid.ColumnDefinitions>
-        <Menu HorizontalAlignment="Left" Height="59" VerticalAlignment="Top" Width="120" Margin="5,0,0,0">
-            <MenuItem Header="_Open" Height="24" Width="55" Background="#FFA2A1A1">
+        <Menu HorizontalAlignment="Left" Height="59" VerticalAlignment="Top" Width="120" Margin="5,5,0,0" Background="#00F0F0F0">
+            <MenuItem Header="_Open" Height="34" Width="120" Background="#FFE2D0CA" BorderBrush="#FF707070" Click="MenuItem_Click">
                 <MenuItem Header="_File" Click="OpenImage"/>
                 <MenuItem Header="_Link" Click="OpenImageBrowser"/>
             </MenuItem>
@@ -23,12 +24,12 @@
             MouseDown="GridMouseDown"
             MouseUp="GridMouseUp"
             MouseMove="GridMouseMove"
-            Background="#33DC7878"
+            Background="#FFCA9093"
             Margin="137,12,0,0"
             Height="375"
             Width="641"
             HorizontalAlignment="Left"
-            VerticalAlignment="Top"
+            VerticalAlignment="Top" Grid.ColumnSpan="3" OpacityMask="Black"
         >
             <Grid
                 Name="innerGrid"
@@ -50,16 +51,39 @@
                 <Rectangle
                     Name="selectionBox"
                     Visibility="Collapsed"
-                    Stroke="Black"
+                    Stroke="#FF13E680"
                     StrokeThickness="1"
                 />
             </Canvas>
-        </Canvas>
-        <Button Content="Submit Area" HorizontalAlignment="Left" Margin="5,64,0,0" VerticalAlignment="Top" Width="120" Click="ButtonClick"/>
-        <TextBox HorizontalAlignment="Left" Margin="5,89,0,0" TextWrapping="Wrap" Text="type to Search.." VerticalAlignment="Top" Width="120" RenderTransformOrigin="0.5,0.67"/>
-        <Button Content="Apply" HorizontalAlignment="Left" Margin="5,112,0,0" VerticalAlignment="Top" Width="120" Click="ApplyUser"/>
-        <Button Name="ExportButton" Content="Export" HorizontalAlignment="Left" Margin="5,347,0,0" VerticalAlignment="Top" Width="120" Height="40" Background="#FF3AC115" Click="ExportCollab"/>
-        <Grid Name="ButtonsGrid" Margin="10,172,100,92" MaxWidth="110" MinWidth="110" MaxHeight="170" MinHeight="170" Background="#FFE1EAED">
+        </Canvas> 
+        <Button Content="Submit Area" HorizontalAlignment="Left" Margin="5,64,0,0" VerticalAlignment="Top" Width="120" Click="ButtonClick" Background="#FFE2D0CA"/>
+        <TextBox HorizontalAlignment="Left" Margin="5,89,0,0" TextWrapping="Wrap"  VerticalAlignment="Top" Width="120" RenderTransformOrigin="0.5,0.67" OpacityMask="Black" BorderBrush="#FF707070">
+            <TextBox.Style>
+                <Style TargetType="TextBox" xmlns:sys="clr-namespace:System;assembly=mscorlib">
+                    <Style.Resources>
+                        <VisualBrush x:Key="CueBannerBrush" AlignmentX="Left" AlignmentY="Center" Stretch="None">
+                            <VisualBrush.Visual>
+                                <Label Content="type to Search.." Foreground="#FF5F5E5E" />
+                            </VisualBrush.Visual>
+                        </VisualBrush>
+                    </Style.Resources>
+                    <Style.Triggers>
+                        <Trigger Property="Text" Value="{x:Static sys:String.Empty}">
+                            <Setter Property="Background" Value="{StaticResource CueBannerBrush}" />
+                        </Trigger>
+                        <Trigger Property="Text" Value="{x:Null}">
+                            <Setter Property="Background" Value="{StaticResource CueBannerBrush}" />
+                        </Trigger>
+                        <Trigger Property="IsKeyboardFocused" Value="True">
+                            <Setter Property="Background" Value="White" />
+                        </Trigger>
+                    </Style.Triggers>
+                </Style>
+            </TextBox.Style>
+        </TextBox>
+        <Button Content="Apply" HorizontalAlignment="Left" Margin="5,112,0,0" VerticalAlignment="Top" Width="120" Click="ApplyUser" Background="#FFE2D0CA"/>
+        <Button Name="ExportButton" Content="Export" HorizontalAlignment="Left" Margin="5,347,0,0" VerticalAlignment="Top" Width="120" Height="40" Background="#FF9CC4B2" Click="ExportCollab"/>
+        <Grid Name="ButtonsGrid" Margin="10,172,100,92" MaxWidth="110" MinWidth="110" MaxHeight="170" MinHeight="170" Background="#FF9A7D7D">
             <Grid.RowDefinitions>
                 <RowDefinition/>
                 <RowDefinition/>
@@ -71,7 +95,7 @@
                 <RowDefinition/>
             </Grid.RowDefinitions>
             <Grid.ColumnDefinitions>
-                
+
                 <ColumnDefinition/>
                 <ColumnDefinition/>
                 <ColumnDefinition/>
@@ -79,6 +103,6 @@
             </Grid.ColumnDefinitions>
         </Grid>
         <TextBlock HorizontalAlignment="Left" Margin="10,392,0,0" TextWrapping="Wrap" Text="" VerticalAlignment="Top" RenderTransformOrigin="0.507,0.754"/>
-        <Button Content="Back/Del" HorizontalAlignment="Left" Margin="15,137,0,0" VerticalAlignment="Top" Height="30" Width="100" Background="#FFD44343" Click="DeleteSelection"/>
+        <Button Content="Back/Del" HorizontalAlignment="Left" Margin="15,137,0,0" VerticalAlignment="Top" Height="30" Width="100" Background="#FFE76D83" Click="DeleteSelection"/>
     </Grid>
 </Window>

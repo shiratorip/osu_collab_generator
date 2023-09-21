@@ -31,15 +31,12 @@
                 </Style>
             </TextBox.Style>
         </TextBox>
-        <Grid>
-            <Grid.RowDefinitions>
-                <RowDefinition/>
-                <RowDefinition/>
-            </Grid.RowDefinitions>
-            <Button Name="proceedButton" Visibility="Hidden" Content="Proceed" HorizontalAlignment="Left" Margin="505,10,0,0" VerticalAlignment="Top" RenderTransformOrigin="0.631,0.503" Width="115" Height="18" Click="Proceed"/>
-        </Grid>
         
-        <Image Name="previewImage" HorizontalAlignment="Left" Height="305" Margin="10,39,0,0" VerticalAlignment="Top" Width="490"/>
+            
+            <Button Name="proceedButton" Visibility="Hidden" Content="Proceed" HorizontalAlignment="Left" Margin="505,10,0,0" VerticalAlignment="Top" RenderTransformOrigin="0.631,0.503" Width="115" Height="18" Click="Proceed"/>
+        
+        
+        <Image Name="previewImage" HorizontalAlignment="Left" Height="305" Margin="10,54,0,0" VerticalAlignment="Top" Width="490"/>
 
     </Grid>
 </Window>
