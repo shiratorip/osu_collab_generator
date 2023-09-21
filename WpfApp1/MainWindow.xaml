@@ -83,6 +83,7 @@
         </TextBox>
         <Button Content="Apply" HorizontalAlignment="Left" Margin="5,112,0,0" VerticalAlignment="Top" Width="120" Click="ApplyUser" Background="#FFE2D0CA"/>
         <Button Name="ExportButton" Content="Export" HorizontalAlignment="Left" Margin="5,347,0,0" VerticalAlignment="Top" Width="120" Height="40" Background="#FF9CC4B2" Click="ExportCollab"/>
+        <Canvas>
         <Grid Name="ButtonsGrid" Margin="10,172,100,92" MaxWidth="110" MinWidth="110" MaxHeight="170" MinHeight="170" Background="#FF9A7D7D">
             <Grid.RowDefinitions>
                 <RowDefinition/>
@@ -101,7 +102,7 @@
                 <ColumnDefinition/>
                 <ColumnDefinition/>
             </Grid.ColumnDefinitions>
-        </Grid>
+        </Grid></Canvas>
         <TextBlock HorizontalAlignment="Left" Margin="10,392,0,0" TextWrapping="Wrap" Text="" VerticalAlignment="Top" RenderTransformOrigin="0.507,0.754"/>
         <Button Content="Back/Del" HorizontalAlignment="Left" Margin="15,137,0,0" VerticalAlignment="Top" Height="30" Width="100" Background="#FFE76D83" Click="DeleteSelection"/>
     </Grid>
