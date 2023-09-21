@@ -48,7 +48,8 @@ namespace OCG
 
             DispatcherTimer timer = new DispatcherTimer();
             timer.Tick += delegate
-            {           
+            {         
+                if (previewImage.Source!= null)
                 proceedButton.Visibility = Visibility.Visible;
 
                 timer.Stop();
