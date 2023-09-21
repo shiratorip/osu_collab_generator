@@ -7,7 +7,7 @@
         mc:Ignorable="d"
         Title="ImageBrowser" Height="450" Width="800">
     <Grid>
-        <TextBox Name="linkText" HorizontalAlignment="Left" Margin="10,10,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="490">
+        <TextBox Name="linkText" TextChanged="PreviewImage" HorizontalAlignment="Left" Margin="10,10,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="490">
             <TextBox.Style>
                 <Style TargetType="TextBox" xmlns:sys="clr-namespace:System;assembly=mscorlib">
                     <Style.Resources>
@@ -36,8 +36,7 @@
                 <RowDefinition/>
                 <RowDefinition/>
             </Grid.RowDefinitions>
-            <Button Content="Load and preview" HorizontalAlignment="Left" Margin="510,10,0,0" VerticalAlignment="Top" RenderTransformOrigin="0.631,0.503" Width="115" Height="18" Click="PreviewImage"/>
-            <Button Name="proceedButton" Visibility="Hidden" Content="Proceed" HorizontalAlignment="Left" Margin="510,33,0,0" VerticalAlignment="Top" RenderTransformOrigin="0.631,0.503" Width="115" Height="18" Click="Proceed"/>
+            <Button Name="proceedButton" Visibility="Hidden" Content="Proceed" HorizontalAlignment="Left" Margin="505,10,0,0" VerticalAlignment="Top" RenderTransformOrigin="0.631,0.503" Width="115" Height="18" Click="Proceed"/>
         </Grid>
         
         <Image Name="previewImage" HorizontalAlignment="Left" Height="305" Margin="10,39,0,0" VerticalAlignment="Top" Width="490"/>

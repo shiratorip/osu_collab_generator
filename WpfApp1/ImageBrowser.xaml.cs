@@ -11,6 +11,7 @@ using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Shapes;
+using System.Windows.Threading;
 
 namespace OCG
 {
@@ -30,13 +31,31 @@ namespace OCG
 
         private void PreviewImage(object sender, RoutedEventArgs e)
         {
+            proceedButton.Visibility = Visibility.Hidden;
+            previewImage.Source = null;
+            try
+            { 
             currentImage = new BitmapImage(new Uri(linkText.Text));
             {
                 previewImage.Source = currentImage;
 
                 //Trace.WriteLine($"{bitmap.Height} {bitmap.Width} {Imported_image.ActualHeight} {Imported_image.ActualWidth}");
-                proceedButton.Visibility = Visibility.Visible;
             }
+            }catch(Exception exception)
+            {
+                return;
+            }
+
+            DispatcherTimer timer = new DispatcherTimer();
+            timer.Tick += delegate
+            {           
+                proceedButton.Visibility = Visibility.Visible;
+
+                timer.Stop();
+            };
+            timer.Interval = new TimeSpan(0, 0, 1);
+            timer.Start();
+            
             
         }
 
