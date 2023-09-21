@@ -10,6 +10,12 @@ using Microsoft.Win32;
 using System.Diagnostics;
 using System.Windows.Shapes;
 using System.Linq;
+using System.Net;
+using static System.Net.WebRequestMethods;
+using System.Net.Http;
+using System.Threading.Tasks;
+using Newtonsoft.Json;
+using System.IO;
 
 namespace OCG
 {
@@ -32,7 +38,6 @@ namespace OCG
         private Dictionary<Button, Rectangle> butsSelectionsBinds = new();
         private Button? selectedBut;
         private int selectedButCounter;
-
         public BitmapImage? image;
 
         bool imageSelected = false;
@@ -346,6 +351,7 @@ namespace OCG
             Clipboard.SetText(exportString);
             ExportButton.Content = "Collab Exported!";
             DispatcherTimer timer = new DispatcherTimer();
+
             timer.Tick += delegate
             {
                 ExportButton.Content = "Export";
@@ -355,9 +361,34 @@ namespace OCG
             timer.Start();
 
         }
-
-        private void MenuItem_Click(object sender, RoutedEventArgs e)
+        public static async Task GetResponse(string url)
         {
+            
+            using var client = new HttpClient();
+
+            var response = await client.GetAsync(url);
+            response.EnsureSuccessStatusCode();
+            string responseBody = await response.Content.ReadAsStringAsync();
+            Trace.WriteLine(responseBody);
+
+        }
+        private bool isReady = true;
+        private void SearchUsers(object sender, RoutedEventArgs e)
+        {
+            if (isReady) {
+                isReady = false;
+                DispatcherTimer timer = new DispatcherTimer();
+
+                timer.Tick += delegate
+                {   
+                    string url = "https://osu-collab-generator-api.shuttleapp.rs/username/" + searchBox.Text;
+                    System.Threading.Tasks.Task task = GetResponse(url);
+                    isReady = true;
+                    timer.Stop();
+                };
+                timer.Interval = new TimeSpan(0, 0, 1);
+                timer.Start();
+            }
 
         }
     }
