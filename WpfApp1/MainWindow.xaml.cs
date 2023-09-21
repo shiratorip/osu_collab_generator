@@ -9,8 +9,9 @@ using System.Windows.Threading;
 using Microsoft.Win32;
 using System.Diagnostics;
 using System.Windows.Shapes;
+using System.Linq;
 
-namespace WpfApp1
+namespace OCG
 {
     /// <summary>
     /// Interaction logic for MainWindow.xaml
@@ -90,7 +91,7 @@ namespace WpfApp1
 
         private void OpenImageBrowser(object sender, RoutedEventArgs e)
         {
-            Window1 win1 = new Window1(this);
+            ImageBrowser win1 = new ImageBrowser(this);
             win1.Show();
         }
 
@@ -205,7 +206,7 @@ namespace WpfApp1
         private void ButtonClick(object sender, RoutedEventArgs e)
         {   
             
-            if(currentSelectionCoordinates != null)
+            if(currentSelectionCoordinates != null && selectionBox.Visibility == Visibility.Visible)
             {
                 AddButonAndSelect(currentSelectionCoordinates.Value);
 
@@ -214,50 +215,65 @@ namespace WpfApp1
 
                 selectionBox.Visibility = Visibility.Collapsed;
 
-                currentSelectionCoordinates = null;
+                //currentSelectionCoordinates = null;
             }
         }
-
-        private Button AddButton(BoundingBox boundingBox)
+        private Rectangle AddSelection(BoundingBox boundingBox)
         {
-            Rectangle rec = new Rectangle()
+            if (selectionBox.Visibility == Visibility.Visible)
             {
-                Width = selectionBox.Width,
-                Height = selectionBox.Height,
+                Rectangle rec = new Rectangle()
+                {
+                    Width = selectionBox.Width,
+                    Height = selectionBox.Height,
 
-                Stroke = Brushes.Blue,
-                StrokeThickness = 2,
-            };
-            StorageCanvas.Children.Add(rec);
-            Button button = new Button()
+                    Stroke = Brushes.Blue,
+                    StrokeThickness = 2,
+                };
+                StorageCanvas.Children.Add(rec);
+                return rec;
+            }
+            else return null;
+
+        }
+
+            private Button AddButton(BoundingBox boundingBox)
             {
-                Height = 20,
-                Width = 20
-            };
-
-            int currentCounter = ButtonsGrid.Children.Count;
-
-            Grid.SetColumn(button, currentCounter % 5);
-            Grid.SetRow(button, (currentCounter / 5));
-
-            button.Click += delegate
+            Rectangle rec = AddSelection(boundingBox);
+            if (rec != null)
             {
-                SelectButton(rec, button, currentCounter);
-            };
-            rectanglesCoordsBinds.Add(rec, boundingBox);
-            butsSelectionsBinds.Add(button, rec);
-            ButtonsGrid.Children.Add(button);
+                Button button = new Button()
+                {
+                    Height = 20,
+                    Width = 20
+                };
 
-            Canvas.SetTop(rec, boundingBox.top - innerGrid.Margin.Top);
-            Canvas.SetLeft(rec, boundingBox.left - innerGrid.Margin.Left);
+                int currentCounter = ButtonsGrid.Children.Count;
 
-            return button;
+                Grid.SetColumn(button, currentCounter % 5);
+                Grid.SetRow(button, (currentCounter / 5));
+                button.Click += delegate
+                {
+                    SelectButton(rec, button, currentCounter);
+                };
+                rectanglesCoordsBinds.Add(rec, boundingBox);
+                butsSelectionsBinds.Add(button, rec);
+                ButtonsGrid.Children.Add(button);
+
+                Canvas.SetTop(rec, boundingBox.top - innerGrid.Margin.Top);
+                Canvas.SetLeft(rec, boundingBox.left - innerGrid.Margin.Left);
+
+                return button;
+            }
+            else return null;
         }
 
         private Button AddButonAndSelect(BoundingBox boundingBox)
-        {
+        {   
             var button = AddButton(boundingBox);
-            SelectButton(butsSelectionsBinds[button], button, ButtonsGrid.Children.Count - 1);
+            if (button != null) {          
+                SelectButton(butsSelectionsBinds[button], button, ButtonsGrid.Children.Count - 1);
+        }
             return button;
         }
 
@@ -295,8 +311,16 @@ namespace WpfApp1
                 BoundingBoxes.Remove(rectanglesCoordsBinds[selectedRect]);
                 rectanglesCoordsBinds.Remove(selectedRect);
                 butsSelectionsBinds.Remove(selectedBut);
-                selectedBut = null;
-                selectedButCounter = -1;
+
+                selectedButCounter = ButtonsGrid.Children.Count;
+                if (selectedButCounter > 0) { 
+                //complexity
+                    selectedBut = butsSelectionsBinds.FirstOrDefault(x => x.Value.Equals(rectanglesCoordsBinds.FirstOrDefault(x => x.Value.Equals(BoundingBoxes.Last())).Key)).Key;
+                    
+                    SelectButton(butsSelectionsBinds[selectedBut], selectedBut, selectedButCounter);
+                }
+                else {  selectedBut = null;}
+               
             }
         }
 

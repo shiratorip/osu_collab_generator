@@ -12,17 +12,17 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Shapes;
 
-namespace WpfApp1
+namespace OCG
 {
     /// <summary>
     /// Interaction logic for Window1.xaml
     /// </summary>
-    public partial class Window1 : Window
+    public partial class ImageBrowser : Window
     {
         MainWindow mainWindow;
         BitmapImage? currentImage;
 
-        public Window1(MainWindow mainWindow)
+        public ImageBrowser(MainWindow mainWindow)
         {
             this.mainWindow = mainWindow;
             InitializeComponent();

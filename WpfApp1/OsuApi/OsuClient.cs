@@ -6,7 +6,7 @@ using System.Text;
 using System.Threading.Tasks;
 using Newtonsoft.Json;
 
-namespace WpfApp1
+namespace OCG
 {
     public class OsuClient
     {
