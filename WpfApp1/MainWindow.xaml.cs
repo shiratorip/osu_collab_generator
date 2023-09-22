@@ -361,17 +361,7 @@ namespace OCG
             timer.Start();
 
         }
-        public static async Task GetResponse(string url)
-        {
-            
-            using var client = new HttpClient();
 
-            var response = await client.GetAsync(url);
-            response.EnsureSuccessStatusCode();
-            string responseBody = await response.Content.ReadAsStringAsync();
-            Trace.WriteLine(responseBody);
-
-        }
         private bool isReady = true;
         private void SearchUsers(object sender, RoutedEventArgs e)
         {
@@ -379,14 +369,16 @@ namespace OCG
                 isReady = false;
                 DispatcherTimer timer = new DispatcherTimer();
 
-                timer.Tick += delegate
+                timer.Tick += async delegate
                 {   
                     string url = "https://osu-collab-generator-api.shuttleapp.rs/username/" + searchBox.Text;
-                    System.Threading.Tasks.Task task = GetResponse(url);
+                
+                    System.Threading.Tasks.Task task = MainWindowHelpers.GetResponse(url);
+                    Trace.WriteLine($"2\n {task} \n");
                     isReady = true;
                     timer.Stop();
                 };
-                timer.Interval = new TimeSpan(0, 0, 1);
+                timer.Interval = new TimeSpan(0, 0, 2);
                 timer.Start();
             }
 
