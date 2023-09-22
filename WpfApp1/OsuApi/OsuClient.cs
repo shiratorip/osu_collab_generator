@@ -137,6 +137,23 @@ namespace OCG
         [JsonProperty("rankHistory")] public UserRankHistory RankHistory { get; set; }
     }
 
+    public class UserCompact
+    {
+        [JsonProperty("avatar_url")] public string AvatarUrl { get; set; }
+        [JsonProperty("country_code")] public string CountryCode { get; set; }
+        [JsonProperty("default_group")] public string DefaultGroup { get; set; }
+        [JsonProperty("is_active")] public bool IsActive { get; set; }
+        [JsonProperty("is_bot")] public bool IsBot { get; set; }
+        [JsonProperty("is_deleted")] public bool IsDeleted { get; set; }
+        [JsonProperty("is_online")] public bool IsOnline { get; set; }
+        [JsonProperty("is_supporter")] public bool IsSupporter { get; set; }
+        [JsonProperty("last_visit")] public DateTime? LastVisit { get; set; }
+        [JsonProperty("pm_friends_only")] public bool PmFriendOnly { get; set; }
+        [JsonProperty("profile_colour")] public string? ProfileColor { get; set; }
+        [JsonProperty("id")] public int Id { get; set; }
+        [JsonProperty("username")] public string Username { get; set; }
+    }
+
     public class UserKudosu
     {
         [JsonProperty("total")] public int Total { get; set; }

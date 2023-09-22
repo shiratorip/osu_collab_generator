@@ -7,15 +7,9 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Threading;
 using Microsoft.Win32;
-using System.Diagnostics;
 using System.Windows.Shapes;
 using System.Linq;
-using System.Net;
-using static System.Net.WebRequestMethods;
-using System.Net.Http;
-using System.Threading.Tasks;
-using Newtonsoft.Json;
-using System.IO;
+using System.Diagnostics;
 
 namespace OCG
 {
@@ -27,6 +21,23 @@ namespace OCG
     {
         public MainWindow()
         {
+            searchTimer.Tick += async delegate
+            {
+                UserCompact[]? users = await MainWindowHelpers.SearchUsers($"https://osu-collab-generator-api.shuttleapp.rs/username/{searchBox.Text}");
+                usersList.Clear();
+                if (users != null)
+                {
+                    foreach (var user in users)
+                    {
+                        usersList.Add(new UserStorage(user.Username, user.Id, user.AvatarUrl)); 
+                        
+                    }
+                    ShowList();
+                }
+                
+                
+                searchTimer.Stop();
+            };
             InitializeComponent();
         }
 
@@ -38,8 +49,10 @@ namespace OCG
         private Dictionary<Button, Rectangle> butsSelectionsBinds = new();
         private Button? selectedBut;
         private int selectedButCounter;
+        private List<UserStorage> usersList = new List<UserStorage>();
         public BitmapImage? image;
 
+        
         bool imageSelected = false;
 
         private readonly OpenFileDialog openImageDialog = new OpenFileDialog
@@ -101,6 +114,7 @@ namespace OCG
         }
 
         private void GridMouseDown(object sender, MouseButtonEventArgs e) {
+            theGrid.Focus();
             if (!imageSelected)
             {
                 return;
@@ -331,7 +345,7 @@ namespace OCG
 
         private void ApplyUser(object sender, RoutedEventArgs e)
         {
-            Clipboard.SetText("Test");
+            
 
         }
 
@@ -357,31 +371,71 @@ namespace OCG
                 ExportButton.Content = "Export";
                 timer.Stop();
             };
-            timer.Interval = new TimeSpan(0, 0, 2);
+            timer.Interval = new TimeSpan(0, 0, 1);
             timer.Start();
 
         }
 
-        private bool isReady = true;
+        private readonly DispatcherTimer searchTimer = new DispatcherTimer()
+        {
+            Interval = new TimeSpan(0, 0, 1)
+        };
         private void SearchUsers(object sender, RoutedEventArgs e)
         {
-            if (isReady) {
-                isReady = false;
-                DispatcherTimer timer = new DispatcherTimer();
+            usersList.Clear();
+            usersStack.Children.Clear();
 
-                timer.Tick += async delegate
-                {   
-                    string url = "https://osu-collab-generator-api.shuttleapp.rs/username/" + searchBox.Text;
-                
-                    System.Threading.Tasks.Task task = MainWindowHelpers.GetResponse(url);
-                    Trace.WriteLine($"2\n {task} \n");
-                    isReady = true;
-                    timer.Stop();
-                };
-                timer.Interval = new TimeSpan(0, 0, 2);
-                timer.Start();
+            if(searchTimer.IsEnabled)
+            {
+                searchTimer.Stop();
             }
-
+            searchTimer.Start();
         }
+
+        private void ShowList()
+        {
+            usersScroll.Visibility = Visibility.Visible;
+            foreach (var user in usersList)
+            {
+                StackPanel stackPanel = new StackPanel()
+                {
+                    Orientation = Orientation.Horizontal,
+                    HorizontalAlignment = HorizontalAlignment.Left,
+                    Width = usersStack.ActualWidth
+                };
+
+                BitmapImage bitmap = new BitmapImage(new Uri(user.AvatarUrl));
+                Image img = new Image()
+                {
+                    HorizontalAlignment = HorizontalAlignment.Left,
+                    Stretch = Stretch.Fill,
+                    Source = bitmap,
+                    Width = usersStack.ActualWidth * 0.3
+                };
+                stackPanel.Children.Add(img);
+
+                Label label = new Label() {
+                    HorizontalAlignment = HorizontalAlignment.Left,
+                    Content = user.Username
+                };
+                stackPanel.Children.Add(label);
+
+                Button button = new Button()
+                {
+                    HorizontalAlignment = HorizontalAlignment.Left,
+                    Width = usersStack.ActualWidth,
+                    Content = stackPanel
+                };
+                usersStack.Children.Add(button);
+            }
+            usersStack.UpdateLayout();
+        }
+
+        private void searchBoxLostFocus(object sender, EventArgs e)
+        {
+            usersScroll.Visibility = Visibility.Hidden;
+        }
+
+
     }
 }
