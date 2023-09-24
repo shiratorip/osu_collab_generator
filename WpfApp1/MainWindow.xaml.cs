@@ -23,24 +23,13 @@ namespace OCG
         {
             searchTimer.Tick += async delegate
             {
-                UserCompact[]? users = await MainWindowHelpers.SearchUsers($"https://osu-collab-generator-api.shuttleapp.rs/username/{searchBox.Text}");
-                usersList.Clear();
-                if (users != null)
-                {
-                    foreach (var user in users)
-                    {
-                        usersList.Add(new UserStorage(user.Username, user.Id, user.AvatarUrl)); 
-                        
-                    }
-                    ShowList();
-                }
-                
-                
+                Trace.WriteLine("Search initiated");
+                UserCompact[]? users = await MainWindowHelpers.SearchUsers($"https://osu-collab-generator-api.shuttleapp.rs/username/{searchBox.Text}", SearchCompleted);
                 searchTimer.Stop();
             };
             InitializeComponent();
         }
-
+        
         private bool mouseDown = false;
         private Point mouseDownPos;
         private List<BoundingBox> BoundingBoxes = new List<BoundingBox>();
@@ -112,9 +101,16 @@ namespace OCG
             ImageBrowser win1 = new ImageBrowser(this);
             win1.Show();
         }
-
-        private void GridMouseDown(object sender, MouseButtonEventArgs e) {
-            theGrid.Focus();
+        private void WindowMouseDown(object sender, MouseButtonEventArgs e)
+        {
+           /* if (!searchBox.IsMouseOver && !usersScroll.IsMouseDirectlyOver)
+            {
+                Keyboard.ClearFocus();
+                usersScroll.Visibility = Visibility.Hidden;
+            }*/
+        }
+    private void GridMouseDown(object sender, MouseButtonEventArgs e) {
+            
             if (!imageSelected)
             {
                 return;
@@ -378,17 +374,12 @@ namespace OCG
 
         private readonly DispatcherTimer searchTimer = new DispatcherTimer()
         {
-            Interval = new TimeSpan(0, 0, 1)
+            Interval = new TimeSpan(0, 0, 0, 0, 500)
         };
         private void SearchUsers(object sender, RoutedEventArgs e)
         {
             usersList.Clear();
-            usersStack.Children.Clear();
-
-            if(searchTimer.IsEnabled)
-            {
-                searchTimer.Stop();
-            }
+            usersStack.Children.Clear();  
             searchTimer.Start();
         }
 
@@ -430,11 +421,26 @@ namespace OCG
             }
             usersStack.UpdateLayout();
         }
-
-        private void searchBoxLostFocus(object sender, EventArgs e)
+        private void SearchCompleted(UserCompact[]? users)
         {
-            usersScroll.Visibility = Visibility.Hidden;
+            
+
+            if (users != null)
+            {   
+                usersList.Clear();
+                usersStack.Children.Clear();
+                foreach (var user in users)
+                {
+                    usersList.Add(new UserStorage(user.Username, user.Id, user.AvatarUrl));
+
+                }
+                ShowList();
+                usersStack.UpdateLayout();
+
+            }
         }
+
+
 
 
     }

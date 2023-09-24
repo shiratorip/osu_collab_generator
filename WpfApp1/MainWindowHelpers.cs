@@ -1,4 +1,5 @@
-﻿using System.Diagnostics;
+﻿using System;
+using System.Diagnostics;
 using System.Net.Http;
 using System.Threading.Tasks;
 using Newtonsoft.Json;
@@ -7,7 +8,8 @@ namespace OCG
 {
     public static class MainWindowHelpers
     {
-        public static async Task<UserCompact[]?> SearchUsers(string url)
+            
+        public static async Task<UserCompact[]?> SearchUsers(string url, Action<UserCompact[]?> callback)
         {
 
             using var client = new HttpClient();
@@ -19,7 +21,7 @@ namespace OCG
                 try
                 {
                     UserCompact[]? users = JsonConvert.DeserializeObject<UserCompact[]>(response);
-                    return users;
+                    callback (users);
                 }
                 catch (JsonSerializationException ex)
                 {
