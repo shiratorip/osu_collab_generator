@@ -423,7 +423,14 @@ namespace OCG
                     {
                         Rectangle rec = butsSelectionsBinds[selectedBut];
                         BoundingBox bb = rectanglesCoordsBinds[rec];
-                        cordsUserBinds.Add(bb,user);
+                        if (cordsUserBinds.ContainsKey(bb)) {
+                            cordsUserBinds[bb] = user;
+                        }
+                        else
+                        {
+                            cordsUserBinds.Add(bb,user);
+                        }
+                        
                         usersScroll.Visibility = Visibility.Hidden;
                     }
                 };
