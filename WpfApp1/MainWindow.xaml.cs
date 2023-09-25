@@ -11,6 +11,7 @@ using System.Windows.Shapes;
 using System.Linq;
 using System.Diagnostics;
 using System.Threading;
+using osuCollabGenerator;
 
 namespace OCG
 {
@@ -22,6 +23,7 @@ namespace OCG
     {
         public MainWindow()
         {
+            userSelectionStorage = new UserSelectionStorage(this);
             searchTimer.Tick += async delegate
             {
                 searchTimer.Stop();
@@ -57,14 +59,10 @@ namespace OCG
         
         private bool mouseDown = false;
         private Point mouseDownPos;
-        private List<BoundingBox> BoundingBoxes = new List<BoundingBox>();
         private BoundingBox? currentSelectionCoordinates;
-        private Dictionary<BoundingBox,UserStorage> cordsUserBinds = new();
-        private Dictionary<Rectangle, BoundingBox> rectanglesCoordsBinds = new();
-        private Dictionary<Button, Rectangle> butsSelectionsBinds = new();
-        private Button? selectedBut;
-        private int selectedButCounter;
         public BitmapImage? image;
+
+        private UserSelectionStorage userSelectionStorage;
         
         bool imageSelected = false;
 
@@ -79,14 +77,10 @@ namespace OCG
             if (openImageDialog.ShowDialog() == true)
             {
                 mouseDown = false;
-                BoundingBoxes.Clear();
                 currentSelectionCoordinates = null;
                 StorageCanvas.Children.Clear();
                 selectionBox.Visibility = Visibility.Collapsed;
-                rectanglesCoordsBinds.Clear();
-                butsSelectionsBinds.Clear();
-                selectedBut = null;
-                selectedButCounter = -1;
+                userSelectionStorage.Clear();
 
                 BitmapImage bitmap = new BitmapImage(new Uri(openImageDialog.FileName));
                 Imported_image.Source = bitmap;
@@ -186,7 +180,7 @@ namespace OCG
             double top = Canvas.GetTop(selectionBox);
             double bottom = top + selectionBox.Height;
             BoundingBox box = new BoundingBox(left, right, top, bottom);
-            foreach (var rect in BoundingBoxes)
+            foreach (var rect in userSelectionStorage.BoundingBoxes)
             {
                 if (rect.Intersects(box))
                 {
@@ -237,116 +231,27 @@ namespace OCG
             {
                 AddButonAndSelect(currentSelectionCoordinates.Value);
 
-                BoundingBox Box = currentSelectionCoordinates.Value;
-                BoundingBoxes.Add(Box);
-
                 selectionBox.Visibility = Visibility.Collapsed;
 
                 //currentSelectionCoordinates = null;
             }
         }
-        private Rectangle AddSelection(BoundingBox boundingBox)
-        {
-            if (selectionBox.Visibility == Visibility.Visible)
-            {
-                Rectangle rec = new Rectangle()
-                {
-                    Width = selectionBox.Width,
-                    Height = selectionBox.Height,
-                    Stroke = Brushes.Blue,
-                    StrokeThickness = 2,
-                };
-                StorageCanvas.Children.Add(rec);
-                return rec;
-            }
-            else return null;
 
+        private int AddButton(BoundingBox boundingBox)
+        {
+            return userSelectionStorage.AddBoundingBox(boundingBox);
         }
 
-        private Button AddButton(BoundingBox boundingBox)
-        {
-            Rectangle rec = AddSelection(boundingBox);
-            if (rec != null)
-            {
-                Button button = new Button()
-                {
-                    Height = 20,
-                    Width = 20
-                };
-
-                int currentCounter = ButtonsGrid.Children.Count;
-
-                Grid.SetColumn(button, currentCounter % 5);
-                Grid.SetRow(button, (currentCounter / 5));
-                button.Click += delegate
-                {
-                    SelectButton(rec, button, currentCounter);
-                };
-                rectanglesCoordsBinds.Add(rec, boundingBox);
-                butsSelectionsBinds.Add(button, rec);
-                ButtonsGrid.Children.Add(button);
-
-                Canvas.SetTop(rec, boundingBox.top - innerGrid.Margin.Top);
-                Canvas.SetLeft(rec, boundingBox.left - innerGrid.Margin.Left);
-
-                return button;
-            }
-            else return null;
-        }
-
-        private Button AddButonAndSelect(BoundingBox boundingBox)
+        private int AddButonAndSelect(BoundingBox boundingBox)
         {   
-            var button = AddButton(boundingBox);
-            if (button != null) {          
-                SelectButton(butsSelectionsBinds[button], button, ButtonsGrid.Children.Count - 1);
-        }
-            return button;
-        }
-
-        private void SelectButton(Rectangle rec, Button button, int buttonIndex)
-        {
-            foreach (Rectangle item in StorageCanvas.Children)
-            {
-                item.Stroke = Brushes.Blue;
-            }
-            rec.Stroke = Brushes.Red;
-            selectedBut = button;
-            selectedButCounter = buttonIndex;
+            int index = AddButton(boundingBox);
+            userSelectionStorage.Select(index);
+            return index;
         }
 
         private void DeleteSelection(object sender, RoutedEventArgs e)
         {
-            if(selectedBut != null)
-            {
-                ButtonsGrid.Children.Remove(selectedBut);
-                foreach (Button item in ButtonsGrid.Children)
-                {
-                    int itemCounter = Grid.GetRow(item) * 5 + Grid.GetColumn(item);
-                    if (itemCounter > selectedButCounter)
-                    {
-                        itemCounter--;
-                        int row = itemCounter / 5;
-                        int column = itemCounter % 5;
-                        Grid.SetRow(item, row);
-                        Grid.SetColumn(item, column);
-                    }
-                }
-                var selectedRect = butsSelectionsBinds[selectedBut];
-                StorageCanvas.Children.Remove(selectedRect);
-                BoundingBoxes.Remove(rectanglesCoordsBinds[selectedRect]);
-                rectanglesCoordsBinds.Remove(selectedRect);
-                butsSelectionsBinds.Remove(selectedBut);
-
-                selectedButCounter = ButtonsGrid.Children.Count;
-                if (selectedButCounter > 0) { 
-                //complexity
-                    selectedBut = butsSelectionsBinds.FirstOrDefault(x => x.Value.Equals(rectanglesCoordsBinds.FirstOrDefault(x => x.Value.Equals(BoundingBoxes.Last())).Key)).Key;
-                    
-                    SelectButton(butsSelectionsBinds[selectedBut], selectedBut, selectedButCounter);
-                }
-                else {  selectedBut = null;}
-               
-            }
+            userSelectionStorage.DeleteCurrentSelection();
         }
 
         private void ApplyUser(object sender, RoutedEventArgs e)
@@ -357,15 +262,19 @@ namespace OCG
         {
             string exportString = "[imagemap]\n";
             exportString += $"{image.UriSource}\n";
-            foreach (BoundingBox coords in BoundingBoxes)
+            for(int i = 0; i < userSelectionStorage.BoundingBoxes.Count; i++)
             {
-                double left = (coords.left - innerGrid.Margin.Left) / innerGrid.Width * 100;
-                double top = (coords.top - innerGrid.Margin.Top) / innerGrid.Height * 100;
-                double width = (coords.right - coords.left) / innerGrid.Width * 100;
-                double height = (coords.bottom - coords.top) / innerGrid.Height * 100;
-                UserStorage user = cordsUserBinds[coords];
+                UserStorage? user = userSelectionStorage.Users[i];
+                if(user != null)
+                {
+                    BoundingBox coords = userSelectionStorage.BoundingBoxes[i];
+                    double left = (coords.left - innerGrid.Margin.Left) / innerGrid.Width * 100;
+                    double top = (coords.top - innerGrid.Margin.Top) / innerGrid.Height * 100;
+                    double width = (coords.right - coords.left) / innerGrid.Width * 100;
+                    double height = (coords.bottom - coords.top) / innerGrid.Height * 100;
 
-                exportString += $"{left} {top} {width} {height} https://osu.ppy.sh/users/{user.Id} {user.Username}\n";
+                    exportString += $"{left} {top} {width} {height} https://osu.ppy.sh/users/{user.Id} {user.Username}\n";
+                }
             }
             exportString += "[/imagemap]";
             Clipboard.SetText(exportString);
@@ -395,7 +304,7 @@ namespace OCG
 
         private void PopulateUsersList(List<UserStorage> usersList)
         {
-            foreach (var user in usersList)
+            foreach (UserStorage user in usersList)
             {
                 StackPanel stackPanel = new StackPanel()
                 {
@@ -428,20 +337,8 @@ namespace OCG
                 };
                 button.Click += delegate
                 {
-                    if (selectedBut != null && usersScroll.Visibility == Visibility.Visible)
-                    {
-                        Rectangle rec = butsSelectionsBinds[selectedBut];
-                        BoundingBox bb = rectanglesCoordsBinds[rec];
-                        if (cordsUserBinds.ContainsKey(bb)) {
-                            cordsUserBinds[bb] = user;
-                        }
-                        else
-                        {
-                            cordsUserBinds.Add(bb,user);
-                        }
-                        
-                        usersScroll.Visibility = Visibility.Hidden;
-                    }
+                    userSelectionStorage.SetUserForCurrentSelection(user);
+                    usersScroll.Visibility = Visibility.Hidden;
                 };
                 usersStack.Children.Add(button);
             }
