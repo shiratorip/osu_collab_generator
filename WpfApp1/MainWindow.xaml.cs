@@ -257,35 +257,55 @@ namespace osuCollabGenerator
 
         private void ExportCollab(object sender, RoutedEventArgs e)
         {
-            string exportString = "[imagemap]\n";
-            exportString += $"{image.UriSource}\n";
-            for(int i = 0; i < userSelectionStorage.BoundingBoxes.Count; i++)
+            if(image != null)
             {
-                UserStorage? user = userSelectionStorage.Users[i];
-                if(user != null)
+                string exportString = "[imagemap]\n";
+                exportString += $"{image.UriSource}\n";
+                for (int i = 0; i < userSelectionStorage.BoundingBoxes.Count; i++)
                 {
-                    BoundingBox coords = userSelectionStorage.BoundingBoxes[i];
-                    double left = (coords.left - innerGrid.Margin.Left) / innerGrid.Width * 100;
-                    double top = (coords.top - innerGrid.Margin.Top) / innerGrid.Height * 100;
-                    double width = (coords.right - coords.left) / innerGrid.Width * 100;
-                    double height = (coords.bottom - coords.top) / innerGrid.Height * 100;
+                    UserStorage? user = userSelectionStorage.Users[i];
+                    if (user != null)
+                    {
+                        BoundingBox coords = userSelectionStorage.BoundingBoxes[i];
+                        double left = (coords.left - innerGrid.Margin.Left) / innerGrid.Width * 100;
+                        double top = (coords.top - innerGrid.Margin.Top) / innerGrid.Height * 100;
+                        double width = (coords.right - coords.left) / innerGrid.Width * 100;
+                        double height = (coords.bottom - coords.top) / innerGrid.Height * 100;
 
-                    exportString += $"{left} {top} {width} {height} https://osu.ppy.sh/users/{user.Id} {user.Username}\n";
+                        exportString += $"{left} {top} {width} {height} https://osu.ppy.sh/users/{user.Id} {user.Username}\n";
+                    }
                 }
+                exportString += "[/imagemap]";
+                Clipboard.SetText(exportString);
+
+                ExportButton.Content = "Collab Exported!";
+                DispatcherTimer timer = new DispatcherTimer();
+
+                timer.Tick += delegate
+                {
+                    ExportButton.Content = "Export";
+                    timer.Stop();
+                };
+                timer.Interval = new TimeSpan(0, 0, 1);
+                timer.Start();
             }
-            exportString += "[/imagemap]";
-            Clipboard.SetText(exportString);
-            ExportButton.Content = "Collab Exported!";
-            DispatcherTimer timer = new DispatcherTimer();
-
-            timer.Tick += delegate
+            else
             {
-                ExportButton.Content = "Export";
-                timer.Stop();
-            };
-            timer.Interval = new TimeSpan(0, 0, 1);
-            timer.Start();
+                Brush b = ExportButton.Background;
+                ExportButton.Background = new SolidColorBrush(Color.FromArgb(0xFF, 0xE7, 0x7D, 0x83));
+                ExportButton.Content = "Collab Export failed!";
+                
+                DispatcherTimer timer = new DispatcherTimer();
 
+                timer.Tick += delegate
+                {
+                    ExportButton.Content = "Export";
+                    ExportButton.Background = b;
+                    timer.Stop();
+                };
+                timer.Interval = new TimeSpan(0, 0, 1);
+                timer.Start();
+            }
         }
 
         private readonly DispatcherTimer searchTimer = new DispatcherTimer()
