@@ -1,6 +1,4 @@
-﻿using System;
-
-namespace OCG
+﻿namespace osuCollabGenerator
 {
     struct BoundingBox
     {

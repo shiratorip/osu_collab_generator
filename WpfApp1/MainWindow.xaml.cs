@@ -7,13 +7,10 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Threading;
 using Microsoft.Win32;
-using System.Windows.Shapes;
-using System.Linq;
 using System.Diagnostics;
 using System.Threading;
-using osuCollabGenerator;
 
-namespace OCG
+namespace osuCollabGenerator
 {
     /// <summary>
     /// Interaction logic for MainWindow.xaml
