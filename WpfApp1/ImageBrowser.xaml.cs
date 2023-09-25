@@ -1,4 +1,6 @@
 ﻿using System;
+using System.Diagnostics;
+using System.Threading;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Media.Imaging;
@@ -21,35 +23,35 @@ namespace osuCollabGenerator
             EventManager.RegisterClassHandler(typeof(TextBox), TextBox.MouseDoubleClickEvent, new RoutedEventHandler(OnMouseDoubleClick));
         }
 
+        private readonly Mutex imageDownloadingMutex = new Mutex();
         private void PreviewImage(object sender, RoutedEventArgs e)
         {
-            proceedButton.Visibility = Visibility.Hidden;
-            previewImage.Source = null;
             try
-            { 
-            currentImage = new BitmapImage(new Uri(linkText.Text));
             {
+                Uri uri = new Uri(linkText.Text); //this can fail quickly so we put it first before mutex
+                imageDownloadingMutex.WaitOne();
+                proceedButton.Visibility = Visibility.Hidden;
+                previewImage.Source = null;
+                currentImage = new BitmapImage();
+                currentImage.BeginInit();
+                currentImage.DownloadCompleted += delegate
+                {
+                    proceedButton.Visibility = Visibility.Visible;
+                    imageDownloadingMutex.ReleaseMutex();
+                };
+                currentImage.DownloadFailed += delegate
+                {
+                    imageDownloadingMutex.ReleaseMutex();
+                };
+                currentImage.UriSource = uri;
+                currentImage.EndInit();
                 previewImage.Source = currentImage;
-
-                //Trace.WriteLine($"{bitmap.Height} {bitmap.Width} {Imported_image.ActualHeight} {Imported_image.ActualWidth}");
             }
-            }catch(Exception exception)
+            catch (Exception exception)
             {
+                Trace.WriteLine(exception);
                 return;
             }
-
-            DispatcherTimer timer = new DispatcherTimer();
-            timer.Tick += delegate
-            {         
-                if (previewImage.Source!= null)
-                proceedButton.Visibility = Visibility.Visible;
-
-                timer.Stop();
-            };
-            timer.Interval = new TimeSpan(0, 0, 1);
-            timer.Start();
-            
-            
         }
 
         private void Proceed(object sender, RoutedEventArgs e)
