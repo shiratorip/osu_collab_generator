@@ -34,6 +34,7 @@ namespace OCG
         private Point mouseDownPos;
         private List<BoundingBox> BoundingBoxes = new List<BoundingBox>();
         private BoundingBox? currentSelectionCoordinates;
+        private Dictionary<BoundingBox,UserStorage> cordsUserBinds = new();
         private Dictionary<Rectangle, BoundingBox> rectanglesCoordsBinds = new();
         private Dictionary<Button, Rectangle> butsSelectionsBinds = new();
         private Button? selectedBut;
@@ -241,7 +242,6 @@ namespace OCG
                 {
                     Width = selectionBox.Width,
                     Height = selectionBox.Height,
-
                     Stroke = Brushes.Blue,
                     StrokeThickness = 2,
                 };
@@ -341,8 +341,6 @@ namespace OCG
 
         private void ApplyUser(object sender, RoutedEventArgs e)
         {
-            
-
         }
 
         private void ExportCollab(object sender, RoutedEventArgs e)
@@ -355,7 +353,9 @@ namespace OCG
                 double top = (coords.top - innerGrid.Margin.Top) / innerGrid.Height * 100;
                 double width = (coords.right - coords.left) / innerGrid.Width * 100;
                 double height = (coords.bottom - coords.top) / innerGrid.Height * 100;
-                exportString += $"{left} {top} {width} {height} https://osu.ppy.sh/users/8934294 FoLZer\n";
+                UserStorage user = cordsUserBinds[coords];
+
+                exportString += $"{left} {top} {width} {height} https://osu.ppy.sh/users/{user.Id} {user.Username}\n";
             }
             exportString += "[/imagemap]";
             Clipboard.SetText(exportString);
@@ -416,6 +416,16 @@ namespace OCG
                     HorizontalAlignment = HorizontalAlignment.Left,
                     Width = usersStack.ActualWidth,
                     Content = stackPanel
+                };
+                button.Click += delegate
+                {
+                    if (selectedBut != null && usersScroll.Visibility == Visibility.Visible)
+                    {
+                        Rectangle rec = butsSelectionsBinds[selectedBut];
+                        BoundingBox bb = rectanglesCoordsBinds[rec];
+                        cordsUserBinds.Add(bb,user);
+                        usersScroll.Visibility = Visibility.Hidden;
+                    }
                 };
                 usersStack.Children.Add(button);
             }

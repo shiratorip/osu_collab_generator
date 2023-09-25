@@ -1,4 +1,6 @@
-﻿namespace OCG
+﻿using System;
+
+namespace OCG
 {
     struct BoundingBox
     {
@@ -6,6 +8,7 @@
         public double right;
         public double bottom;
         public double top;
+      
 
         public BoundingBox(double left, double right, double top, double bottom)
         {
@@ -14,6 +17,7 @@
             this.bottom = bottom;
             this.top = top;
         }
+
 
         public bool Intersects(BoundingBox other)
         {
