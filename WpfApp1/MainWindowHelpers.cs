@@ -9,7 +9,7 @@ namespace OCG
     public static class MainWindowHelpers
     {
             
-        public static async Task<UserCompact[]?> SearchUsers(string url, Action<UserCompact[]?> callback)
+        public static async Task<UserCompact[]?> SearchUsers(string url)
         {
 
             using var client = new HttpClient();
@@ -21,7 +21,7 @@ namespace OCG
                 try
                 {
                     UserCompact[]? users = JsonConvert.DeserializeObject<UserCompact[]>(response);
-                    callback (users);
+                    return users;
                 }
                 catch (JsonSerializationException ex)
                 {

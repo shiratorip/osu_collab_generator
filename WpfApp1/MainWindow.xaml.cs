@@ -10,6 +10,7 @@ using Microsoft.Win32;
 using System.Windows.Shapes;
 using System.Linq;
 using System.Diagnostics;
+using System.Threading;
 
 namespace OCG
 {
@@ -23,9 +24,33 @@ namespace OCG
         {
             searchTimer.Tick += async delegate
             {
-                Trace.WriteLine("Search initiated");
-                UserCompact[]? users = await MainWindowHelpers.SearchUsers($"https://osu-collab-generator-api.shuttleapp.rs/username/{searchBox.Text}", SearchCompleted);
                 searchTimer.Stop();
+                try
+                {
+                    searchMutex.WaitOne();
+                    Trace.WriteLine("Search initiated");
+                    usersStack.Children.Clear();
+                    UserCompact[]? users = await MainWindowHelpers.SearchUsers($"https://osu-collab-generator-api.shuttleapp.rs/username/{searchBox.Text}");
+                    if (users != null)
+                    {
+                        List<UserStorage> usersList = new List<UserStorage>(users.Length);
+                        foreach (var user in users)
+                        {
+                            usersList.Add(new UserStorage(user.Username, user.Id, user.AvatarUrl));
+                        }
+                        PopulateUsersList(usersList);
+                    }
+                    else
+                    {
+                        usersStack.Children.Clear();
+                    }
+                    usersStack.UpdateLayout();
+                    usersScroll.Visibility = Visibility.Visible;
+                }
+                finally
+                {
+                    searchMutex.ReleaseMutex();
+                }
             };
             InitializeComponent();
         }
@@ -39,9 +64,7 @@ namespace OCG
         private Dictionary<Button, Rectangle> butsSelectionsBinds = new();
         private Button? selectedBut;
         private int selectedButCounter;
-        private List<UserStorage> usersList = new List<UserStorage>();
         public BitmapImage? image;
-
         
         bool imageSelected = false;
 
@@ -66,24 +89,12 @@ namespace OCG
                 selectedButCounter = -1;
 
                 BitmapImage bitmap = new BitmapImage(new Uri(openImageDialog.FileName));
-                {
-                    Imported_image.Source = bitmap;
+                Imported_image.Source = bitmap;
 
-                    //Trace.WriteLine($"{bitmap.Height} {bitmap.Width} {Imported_image.ActualHeight} {Imported_image.ActualWidth}");
-                    innerGrid.Width = bitmap.Width;
-                    innerGrid.Height = bitmap.Height;
-                    imageSelected = true;
-                }
-
-                bitmap.DownloadCompleted += delegate
-                {
-                    Imported_image.Source = bitmap;
-
-                    //Trace.WriteLine($"{bitmap.Height} {bitmap.Width} {Imported_image.ActualHeight} {Imported_image.ActualWidth}");
-                    innerGrid.Width = bitmap.Width;
-                    innerGrid.Height = bitmap.Height;
-                    imageSelected = true;
-                };
+                //Trace.WriteLine($"{bitmap.Height} {bitmap.Width} {Imported_image.ActualHeight} {Imported_image.ActualWidth}");
+                innerGrid.Width = bitmap.Width;
+                innerGrid.Height = bitmap.Height;
+                imageSelected = true;
             }
             
         }
@@ -110,7 +121,7 @@ namespace OCG
                 usersScroll.Visibility = Visibility.Hidden;
             }*/
         }
-    private void GridMouseDown(object sender, MouseButtonEventArgs e) {
+        private void GridMouseDown(object sender, MouseButtonEventArgs e) {
             
             if (!imageSelected)
             {
@@ -252,8 +263,8 @@ namespace OCG
 
         }
 
-            private Button AddButton(BoundingBox boundingBox)
-            {
+        private Button AddButton(BoundingBox boundingBox)
+        {
             Rectangle rec = AddSelection(boundingBox);
             if (rec != null)
             {
@@ -304,7 +315,6 @@ namespace OCG
         }
 
         private void DeleteSelection(object sender, RoutedEventArgs e)
-
         {
             if(selectedBut != null)
             {
@@ -376,16 +386,15 @@ namespace OCG
         {
             Interval = new TimeSpan(0, 0, 0, 0, 500)
         };
+        private readonly Mutex searchMutex = new Mutex();
         private void SearchUsers(object sender, RoutedEventArgs e)
         {
-            usersList.Clear();
-            usersStack.Children.Clear();  
+            searchTimer.Stop();
             searchTimer.Start();
         }
 
-        private void ShowList()
+        private void PopulateUsersList(List<UserStorage> usersList)
         {
-            usersScroll.Visibility = Visibility.Visible;
             foreach (var user in usersList)
             {
                 StackPanel stackPanel = new StackPanel()
@@ -436,29 +445,6 @@ namespace OCG
                 };
                 usersStack.Children.Add(button);
             }
-            usersStack.UpdateLayout();
         }
-        private void SearchCompleted(UserCompact[]? users)
-        {
-            
-
-            if (users != null)
-            {   
-                usersList.Clear();
-                usersStack.Children.Clear();
-                foreach (var user in users)
-                {
-                    usersList.Add(new UserStorage(user.Username, user.Id, user.AvatarUrl));
-
-                }
-                ShowList();
-                usersStack.UpdateLayout();
-
-            }
-        }
-
-
-
-
     }
 }
