@@ -1,4 +1,5 @@
-﻿using System.Diagnostics;
+﻿using System;
+using System.Diagnostics;
 using System.Net.Http;
 using System.Threading.Tasks;
 using Newtonsoft.Json;
@@ -35,6 +36,23 @@ namespace osuCollabGenerator
             }
 
 
+        }
+
+        public static async Task<Uri?> UploadImage(byte[] imageBytes)
+        {
+            using var client = new HttpClient();
+
+            HttpContent content = new MultipartFormDataContent
+            {
+                new ByteArrayContent(imageBytes)
+            };
+            HttpResponseMessage responseMessage = await client.PostAsync("https://osu-collab-generator-api.shuttleapp.rs/image_upload", content);
+            if (responseMessage.IsSuccessStatusCode)
+            {
+                string link = await responseMessage.Content.ReadAsStringAsync();
+                return new Uri(link);
+            }
+            return null;
         }
     }
 }
