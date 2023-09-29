@@ -2,6 +2,7 @@
 using System.Windows.Controls;
 using System.Windows.Shapes;
 using System.Windows.Media;
+using System.Diagnostics;
 
 namespace osuCollabGenerator
 {
@@ -41,7 +42,6 @@ namespace osuCollabGenerator
                 Stroke = Brushes.Blue,
                 StrokeThickness = 2,
             };
-
             window.StorageCanvas.Children.Add(rec);
 
             Canvas.SetTop(rec, boundingBox.top - window.innerGrid.Margin.Top);

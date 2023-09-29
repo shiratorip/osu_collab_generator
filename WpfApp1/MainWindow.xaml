@@ -1,4 +1,4 @@
-﻿<Window x:Class="osuCollabGenerator.MainWindow"
+﻿<Window Name="window" x:Class="osuCollabGenerator.MainWindow"
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
@@ -6,7 +6,8 @@
         xmlns:local="clr-namespace:osuCollabGenerator"
         mc:Ignorable="d"
         MouseDown="WindowMouseDown"
-        Title="MainWindow" Height="450" Width="800">
+        Title="MainWindow" Height="Auto" Width="Auto" SizeToContent="WidthAndHeight"
+        MinHeight="450" MinWidth="590">
     <Grid Background="#FFD5BBB1">
         <Grid.ColumnDefinitions>
             <ColumnDefinition Width="44*"/>
@@ -20,41 +21,68 @@
             </MenuItem>
         </Menu>
 
-        <Canvas
-            x:Name="theGrid"
-            MouseDown="GridMouseDown"
-            MouseUp="GridMouseUp"
-            MouseMove="GridMouseMove"
-            Background="#FFCA9093"
-            Margin="137,12,22,47" Grid.ColumnSpan="3" OpacityMask="Black"
-        >
-            <Grid
-                Name="innerGrid"
-                Background="#3378c1dc"
-                Margin="20,20,20,20"
-                
-            >
-                <Image
-                    Name="Imported_image"
-                    HorizontalAlignment="Left"
-                    VerticalAlignment="Top"
-                    RenderTransformOrigin="0.5,0.5"
-                    Stretch="None"
-                />
+        <Grid x:Name="theGrid"
+                    MouseDown="GridMouseDown"
+                    MouseUp="GridMouseUp"
+                    MouseMove="GridMouseMove"
+                    Background="#FFCA9093"
+                    Grid.ColumnSpan="3" OpacityMask="Black"
+                    Margin="140,20,20,50" SizeChanged="LayoutUpdate">
 
-                <Canvas Name="StorageCanvas" />
+            <Grid Name="dockP" Margin="20,20,20,20">
+                <ScrollViewer Name="ImageScroll"
+                    HorizontalScrollBarVisibility="Auto"
+                    VerticalScrollBarVisibility="Auto"
+                    MaxWidth="{Binding ActualWidth, ElementName=dockP}"
+                    MaxHeight="{Binding ActualHeight, ElementName=dockP}"
+                    PreviewMouseWheel="Zoom"
+                >
+                    <Viewbox Name="ZoomViewbox"
+                        Margin="0,0,0,0"
+                    >
+                        <Canvas Name="innerGrid"
+                            Background="#4C48AD53"
+                        >
+                            <Image Name="Imported_image"
+                                HorizontalAlignment="Left"
+                                VerticalAlignment="Top"
+                                Stretch="Uniform"
+                            />
+                            <Canvas Name="StorageCanvas" 
+                                    Margin="0,0,0,0"  
+                                    Width="Auto" 
+                                    Height="Auto"
+                            />
+                        </Canvas>
+                    </Viewbox>
+                </ScrollViewer>
             </Grid>
-            <Canvas Name="SelectionBoxCanvas">
-                <Rectangle
-                    Name="selectionBox"
-                    Visibility="Collapsed"
-                    Stroke="#FF13E680"
-                    StrokeThickness="1"
-                />
-            </Canvas>
-        </Canvas>
-        <Button Content="Submit Area" HorizontalAlignment="Left" Margin="5,64,0,0" VerticalAlignment="Top" Width="120" Click="ButtonClick" Background="#FFE2D0CA"/>
-        <TextBox Name="searchBox" TextChanged="SearchUsers"  HorizontalAlignment="Left" Margin="5,89,0,0" TextWrapping="Wrap"  VerticalAlignment="Top" Width="120" RenderTransformOrigin="0.5,0.67" OpacityMask="Black" BorderBrush="#FF707070">
+            <Rectangle Name="selectionBox"
+                       Visibility="Collapsed"
+                       Stroke="#FF13E680"
+                       StrokeThickness="1"
+            />
+        </Grid>
+
+
+        <Button Content="Submit Area" 
+                HorizontalAlignment="Left" 
+                Margin="5,64,0,0" 
+                VerticalAlignment="Top" 
+                Width="120" 
+                Click="ButtonClick" 
+                Background="#FFE2D0CA"
+        />
+        <TextBox Name="searchBox" 
+                     TextChanged="SearchUsers"  
+                     HorizontalAlignment="Left" 
+                     Margin="5,89,0,0" 
+                     TextWrapping="Wrap"  
+                     VerticalAlignment="Top" 
+                     Width="120" 
+                     RenderTransformOrigin="0.5,0.67" 
+                     OpacityMask="Black" 
+                     BorderBrush="#FF707070">
             <TextBox.Style>
                 <Style TargetType="TextBox" xmlns:sys="clr-namespace:System;assembly=mscorlib">
                     <Style.Resources>
@@ -78,11 +106,15 @@
                 </Style>
             </TextBox.Style>
         </TextBox>
-        <ScrollViewer  Name="usersScroll" Visibility="Hidden" Margin="137,89,435,47" Grid.ColumnSpan="2" VerticalScrollBarVisibility="Auto">
-            <StackPanel  x:Name="usersStack" Background="#FFDC3636" Grid.ColumnSpan="2">
-
-
-            </StackPanel>
+        <ScrollViewer  Name="usersScroll" 
+                           Visibility="Hidden" 
+                           Margin="137,89,435,47" 
+                           Grid.ColumnSpan="2" 
+                           VerticalScrollBarVisibility="Auto">
+            <StackPanel  x:Name="usersStack" 
+                         Background="#FFDC3636" 
+                         Grid.ColumnSpan="2"
+            />
         </ScrollViewer>
         <Button Content="Apply" HorizontalAlignment="Left" Margin="5,112,0,0" VerticalAlignment="Top" Width="120" Click="ApplyUser" Background="#FFE2D0CA"/>
         <Button Name="ExportButton" Content="Export" HorizontalAlignment="Left" Margin="5,347,0,0" VerticalAlignment="Top" Width="120" Height="40" Background="#FF9CC4B2" Click="ExportCollab"/>
