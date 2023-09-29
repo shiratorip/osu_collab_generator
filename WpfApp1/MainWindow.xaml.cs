@@ -14,7 +14,7 @@ namespace osuCollabGenerator
 {
     /// <summary>
     /// Interaction logic for MainWindow.xaml
-    /// </summary
+    /// </summary>
     /// collab maker project
     public partial class MainWindow : Window
     {
@@ -80,12 +80,7 @@ namespace osuCollabGenerator
                 userSelectionStorage.Clear();
 
                 BitmapImage bitmap = new BitmapImage(new Uri(openImageDialog.FileName));
-                Imported_image.Source = bitmap;
-
-                //Trace.WriteLine($"{bitmap.Height} {bitmap.Width} {Imported_image.ActualHeight} {Imported_image.ActualWidth}");
-                innerGrid.Width = bitmap.Width;
-                innerGrid.Height = bitmap.Height;
-                imageSelected = true;
+                SetImage(bitmap);
             }
             
         }
@@ -93,9 +88,26 @@ namespace osuCollabGenerator
         public void SetImage(BitmapImage bitmap)
         {
             Imported_image.Source = bitmap;
-            innerGrid.Width = bitmap.Width;
-            innerGrid.Height = bitmap.Height;
             imageSelected = true;
+            double width = theGrid.Margin.Left + theGrid.Margin.Right + innerGrid.Margin.Left + innerGrid.Margin.Right + bitmap.Width + 13;
+            double height = theGrid.Margin.Top + theGrid.Margin.Bottom + innerGrid.Margin.Top + innerGrid.Margin.Bottom + bitmap.Height + 39;
+            
+            double extraWidth = width - SystemParameters.PrimaryScreenWidth;
+            double extraHeight = height - SystemParameters.PrimaryScreenHeight;
+            if (width > SystemParameters.PrimaryScreenWidth) {
+                window.Width = SystemParameters.PrimaryScreenWidth;
+            } else if(width > window.ActualWidth) {
+                window.Width = width;
+            }
+            if (height > SystemParameters.PrimaryScreenHeight) {
+                window.Height = SystemParameters.PrimaryScreenHeight;
+            } else if(height > window.ActualHeight) {
+                window.Height = height;
+            }
+            Imported_image.Width = bitmap.Width - Math.Max(extraWidth, 0);
+            Imported_image.Height = bitmap.Height - Math.Max(extraHeight, 0);
+            innerGrid.Width = bitmap.Width - Math.Max(extraWidth, 0);
+            innerGrid.Height = bitmap.Height - Math.Max(extraHeight, 0);
             this.image = bitmap;
         }
 
@@ -292,7 +304,7 @@ namespace osuCollabGenerator
             else
             {
                 Brush b = ExportButton.Background;
-                ExportButton.Background = new SolidColorBrush(Color.FromArgb(0xFF, 0xE7, 0x7D, 0x83));
+                ExportButton.Background = new SolidColorBrush(Color.FromArgb(0xFF, 0xEF, 0x30, 0x54)); 
                 ExportButton.Content = "Collab Export failed!";
                 
                 DispatcherTimer timer = new DispatcherTimer();

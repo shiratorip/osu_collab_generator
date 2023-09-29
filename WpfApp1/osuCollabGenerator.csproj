@@ -14,10 +14,19 @@
   <ItemGroup>
     <None Remove="NewFile1.txt" />
     <None Remove="OsuApi\NewFile1.txt" />
+    <None Remove="tile.png" />
+    <None Remove="tile1.png" />
+    <None Remove="wallpapersden.com_anime-original-hd-2023_3500x1885.jpg" />
   </ItemGroup>
 
   <ItemGroup>
     <PackageReference Include="Newtonsoft.Json" Version="13.0.3" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Resource Include="tile.png" />
+    <Resource Include="tile1.png" />
+    <Resource Include="wallpapersden.com_anime-original-hd-2023_3500x1885.jpg" />
   </ItemGroup>
 
 </Project>
