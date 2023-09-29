@@ -257,7 +257,7 @@ namespace osuCollabGenerator
 
         private void ExportCollab(object sender, RoutedEventArgs e)
         {
-            if(image != null || userSelectionStorage.BoundingBoxes.Count == 0)
+            if(image != null && userSelectionStorage.BoundingBoxes.Count != 0)
             {
                 string exportString = "[imagemap]\n";
                 exportString += $"{image.UriSource}\n";

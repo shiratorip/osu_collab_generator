@@ -26,11 +26,7 @@
             MouseUp="GridMouseUp"
             MouseMove="GridMouseMove"
             Background="#FFCA9093"
-            Margin="137,12,0,0"
-            Height="375"
-            Width="641"
-            HorizontalAlignment="Left"
-            VerticalAlignment="Top" Grid.ColumnSpan="3" OpacityMask="Black"
+            Margin="137,12,22,47" Grid.ColumnSpan="3" OpacityMask="Black"
         >
             <Grid
                 Name="innerGrid"
@@ -84,8 +80,8 @@
         </TextBox>
         <ScrollViewer  Name="usersScroll" Visibility="Hidden" Margin="137,89,435,47" Grid.ColumnSpan="2" VerticalScrollBarVisibility="Auto">
             <StackPanel  x:Name="usersStack" Background="#FFDC3636" Grid.ColumnSpan="2">
-                
-              
+
+
             </StackPanel>
         </ScrollViewer>
         <Button Content="Apply" HorizontalAlignment="Left" Margin="5,112,0,0" VerticalAlignment="Top" Width="120" Click="ApplyUser" Background="#FFE2D0CA"/>
