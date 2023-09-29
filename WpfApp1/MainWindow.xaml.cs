@@ -9,7 +9,6 @@ using System.Windows.Threading;
 using Microsoft.Win32;
 using System.Diagnostics;
 using System.Threading;
-using System.Xml.Serialization;
 
 namespace osuCollabGenerator
 {
@@ -21,8 +20,6 @@ namespace osuCollabGenerator
     {
         public MainWindow()
         {
-            
-
             userSelectionStorage = new UserSelectionStorage(this);
             searchTimer.Tick += async delegate
             {
@@ -72,10 +69,6 @@ namespace osuCollabGenerator
             
         };
 
-        private void LayoutUpdate(object sender, RoutedEventArgs e)
-        {
-            
-        }
         private void OpenImage(object sender, RoutedEventArgs e)
         {
             if (openImageDialog.ShowDialog() == true)
@@ -87,42 +80,21 @@ namespace osuCollabGenerator
                 userSelectionStorage.Clear();
 
                 BitmapImage bitmap = new BitmapImage(new Uri(openImageDialog.FileName));
-                
                 Imported_image.Source = bitmap;
-                /*
-                if (bitmap.Width > innerGrid.ActualWidth || bitmap.Height > innerGrid.ActualHeight)
-                {
-                    innerGrid.MaxWidth = theGrid.ActualWidth - 40;
-                    innerGrid.MaxHeight = theGrid.ActualHeight - 40;
-                }
-                else
-                {
-                    innerGrid.MaxWidth = bitmap.Width;
-                    innerGrid.MaxHeight = bitmap.Height;
-                }
-                innerGrid.Width = theGrid.ActualWidth - 40;
-                innerGrid.Height = theGrid.ActualHeight - 40;
-                */
 
+                //Trace.WriteLine($"{bitmap.Height} {bitmap.Width} {Imported_image.ActualHeight} {Imported_image.ActualWidth}");
                 innerGrid.Width = bitmap.Width;
                 innerGrid.Height = bitmap.Height;
-                //ImageScroll.Width = theGrid.ActualWidth - (ImageScroll.Margin.Left + ImageScroll.Margin.Right);
-                //ImageScroll.Height = theGrid.ActualHeight - (ImageScroll.Margin.Top + ImageScroll.Margin.Bottom);
-
-                //ImageScroll.Width = innerGrid.W
-
-
                 imageSelected = true;
             }
-
-
+            
         }
 
         public void SetImage(BitmapImage bitmap)
         {
             Imported_image.Source = bitmap;
-            innerGrid.Width = theGrid.ActualWidth - 40;
-            innerGrid.Height = theGrid.ActualHeight - 40;
+            innerGrid.Width = bitmap.Width;
+            innerGrid.Height = bitmap.Height;
             imageSelected = true;
             this.image = bitmap;
         }
@@ -166,31 +138,31 @@ namespace osuCollabGenerator
                 return;
             }
 
-            double selectionBoxLeft = Canvas.GetLeft(selectionBox) - ImageScroll.Margin.Left;
-            double selectionBoxTop = Canvas.GetTop(selectionBox) - ImageScroll.Margin.Top;
+            double selectionBoxLeft = Canvas.GetLeft(selectionBox) - innerGrid.Margin.Left;
+            double selectionBoxTop = Canvas.GetTop(selectionBox) - innerGrid.Margin.Top;
             
             if (selectionBoxLeft < 0)
             {
                 selectionBox.Width += selectionBoxLeft;
-                Canvas.SetLeft(selectionBox, ImageScroll.Margin.Left);
+                Canvas.SetLeft(selectionBox, innerGrid.Margin.Left);
             }
             else
             {
-                Canvas.SetLeft(selectionBox, selectionBoxLeft + ImageScroll.Margin.Left);
+                Canvas.SetLeft(selectionBox, selectionBoxLeft + innerGrid.Margin.Left);
             }
 
             if (selectionBoxTop < 0)
             {
                 selectionBox.Height += selectionBoxTop;
-                Canvas.SetTop(selectionBox, ImageScroll.Margin.Top);
+                Canvas.SetTop(selectionBox, innerGrid.Margin.Top);
             }
             else
             {
-                Canvas.SetTop(selectionBox, selectionBoxTop + ImageScroll.Margin.Top);
+                Canvas.SetTop(selectionBox, selectionBoxTop + innerGrid.Margin.Top);
             }
 
-            double widthOverflow = (Canvas.GetLeft(selectionBox) - ImageScroll.Margin.Left + selectionBox.Width) - ImageScroll.ActualWidth;
-            double heightOverflow = (Canvas.GetTop(selectionBox) - ImageScroll.Margin.Top + selectionBox.Height) - ImageScroll.ActualHeight;
+            double widthOverflow = (Canvas.GetLeft(selectionBox) - innerGrid.Margin.Left + selectionBox.Width) - innerGrid.ActualWidth;
+            double heightOverflow = (Canvas.GetTop(selectionBox) - innerGrid.Margin.Top + selectionBox.Height) - innerGrid.ActualHeight;
             if (widthOverflow > 0)
             {
                 selectionBox.Width -= Math.Min(widthOverflow, selectionBox.Width);
@@ -248,63 +220,6 @@ namespace osuCollabGenerator
                 }
             }
         }
-        private void Zoom(object sender, MouseWheelEventArgs e)
-        {
-            Trace.WriteLine($"{e.Delta}");
-            if(Keyboard.IsKeyDown(Key.LeftCtrl))
-            {
-                UpdateViewBox(e.Delta);
-                e.Handled = true;
-                dockP.UpdateLayout();
-            }
-        }
-
-        int value = 3;
-        int initialImageWidth = 0;
-        int initialImageHeight = 0;
-        private void UpdateViewBox(int mouseWheel)
-        {
-            if(mouseWheel > 0 && value < 10)
-            {
-                value += 1;
-            }
-            else if(mouseWheel < 0 && value > 0)
-            {
-                value -= 1;
-            }
-
-            float p = value switch
-            {
-                //12.5%
-                0 => 0.125f,
-                //25%
-                1 => 0.25f,
-                //50%
-                2 => 0.5f,
-                //100%
-                3 => 1,
-                //200%
-                4 => 2,
-                //300%
-                5 => 3,
-                //400%
-                6 => 4,
-                //500%
-                7 => 5,
-                //600%
-                8 => 6,
-                //700%
-                9 => 7,
-                //800%
-                10 => 8,
-                _ => throw new ArgumentOutOfRangeException(),
-            };
-            ZoomViewbox.MaxWidth = Imported_image.ActualWidth * p;
-            ZoomViewbox.MaxHeight = Imported_image.ActualHeight * p;
-        }
-            
-            
-        
 
         private void ButtonClick(object sender, RoutedEventArgs e)
         {   
@@ -338,8 +253,6 @@ namespace osuCollabGenerator
 
         private void ApplyUser(object sender, RoutedEventArgs e)
         {
-            //Trace.WriteLine($"{window.ActualHeight} {window.ActualWidth}");
-            Trace.WriteLine($"{theGrid.ActualWidth} {ImageScroll.ActualWidth} {Imported_image.ActualWidth} {window.ActualWidth} {dockP.ActualWidth}");
         }
 
         private void ExportCollab(object sender, RoutedEventArgs e)
@@ -354,10 +267,10 @@ namespace osuCollabGenerator
                     if (user != null)
                     {
                         BoundingBox coords = userSelectionStorage.BoundingBoxes[i];
-                        double left = (coords.left - ImageScroll.Margin.Left) / ImageScroll.Width * 100;
-                        double top = (coords.top - ImageScroll.Margin.Top) / ImageScroll.Height * 100;
-                        double width = (coords.right - coords.left) / ImageScroll.Width * 100;
-                        double height = (coords.bottom - coords.top) / ImageScroll.Height * 100;
+                        double left = (coords.left - innerGrid.Margin.Left) / innerGrid.Width * 100;
+                        double top = (coords.top - innerGrid.Margin.Top) / innerGrid.Height * 100;
+                        double width = (coords.right - coords.left) / innerGrid.Width * 100;
+                        double height = (coords.bottom - coords.top) / innerGrid.Height * 100;
 
                         exportString += $"{left} {top} {width} {height} https://osu.ppy.sh/users/{user.Id} {user.Username}\n";
                     }
