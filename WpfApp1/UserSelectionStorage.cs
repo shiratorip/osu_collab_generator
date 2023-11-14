@@ -32,7 +32,7 @@ namespace osuCollabGenerator
             window.ButtonsGrid.Children.Clear();
         }
 
-        public int AddBoundingBox(BoundingBox boundingBox)
+        public int AddBoundingBox(BoundingBox boundingBox, TextBlock CurName)
         {
             Rectangle rec = new Rectangle()
             {
@@ -66,6 +66,15 @@ namespace osuCollabGenerator
             {
                 int index = window.ButtonsGrid.Children.IndexOf(button);
                 Select(index);
+
+                if(users.Count>=index && users[index]!=null) {
+                    CurName.Text = users[index].Username;
+                }
+                else
+                {
+                    CurName.Text ="...";
+
+                }
             };
             window.ButtonsGrid.Children.Add(button);
 
@@ -93,7 +102,7 @@ namespace osuCollabGenerator
                 boundingBoxes.RemoveAt(selectionIndex.Value);
                 rectangles.RemoveAt(selectionIndex.Value);
                 users.RemoveAt(selectionIndex.Value);
-
+                    
                 selectionIndex = null;
             }
         }
@@ -119,7 +128,6 @@ namespace osuCollabGenerator
             Button button = (Button)window.ButtonsGrid.Children[index];
             button.Background = Brushes.Red;
             rect.Stroke = Brushes.Red;
-
             selectionIndex = index;
         }
     }

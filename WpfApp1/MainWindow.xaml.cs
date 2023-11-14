@@ -93,10 +93,7 @@ namespace osuCollabGenerator
             
             window.WindowState = WindowState.Maximized;
 
-
-
-
-
+            
             Trace.WriteLine(bitmap.Width);
             Trace.WriteLine(innerGrid.ActualWidth);
             Trace.WriteLine(theGrid.ActualWidth);
@@ -223,7 +220,7 @@ namespace osuCollabGenerator
                 }
             }
         }
-
+        
         private void ButtonClick(object sender, RoutedEventArgs e)
         {   
             
@@ -239,7 +236,7 @@ namespace osuCollabGenerator
 
         private int AddButton(BoundingBox boundingBox)
         {
-            return userSelectionStorage.AddBoundingBox(boundingBox);
+            return userSelectionStorage.AddBoundingBox(boundingBox,CurName);
         }
 
         private int AddButonAndSelect(BoundingBox boundingBox)
@@ -254,9 +251,7 @@ namespace osuCollabGenerator
             userSelectionStorage.DeleteCurrentSelection();
         }
 
-        private void ApplyUser(object sender, RoutedEventArgs e)
-        {
-        }
+        
 
         private void ExportCollab(object sender, RoutedEventArgs e)
         {
