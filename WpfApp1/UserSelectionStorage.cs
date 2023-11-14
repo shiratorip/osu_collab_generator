@@ -55,7 +55,8 @@ namespace osuCollabGenerator
             {
                 Height = 20,
                 Width = 20
-            };
+        };
+            
 
             int index = boundingBoxes.Count - 1;
 
@@ -110,9 +111,13 @@ namespace osuCollabGenerator
             if(selectionIndex.HasValue)
             {
                 Rectangle prevRect = (Rectangle)window.StorageCanvas.Children[selectionIndex.Value];
+                Button prevButton = (Button)window.ButtonsGrid.Children[selectionIndex.Value];
+                prevButton.Background = Brushes.Blue;
                 prevRect.Stroke = Brushes.Blue;
             }
             Rectangle rect = (Rectangle)window.StorageCanvas.Children[index];
+            Button button = (Button)window.ButtonsGrid.Children[index];
+            button.Background = Brushes.Red;
             rect.Stroke = Brushes.Red;
 
             selectionIndex = index;

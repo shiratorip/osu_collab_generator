@@ -89,25 +89,18 @@ namespace osuCollabGenerator
         {
             Imported_image.Source = bitmap;
             imageSelected = true;
-            double width = theGrid.Margin.Left + theGrid.Margin.Right + innerGrid.Margin.Left + innerGrid.Margin.Right + bitmap.Width + 13;
-            double height = theGrid.Margin.Top + theGrid.Margin.Bottom + innerGrid.Margin.Top + innerGrid.Margin.Bottom + bitmap.Height + 39;
             
-            double extraWidth = width - SystemParameters.PrimaryScreenWidth;
-            double extraHeight = height - SystemParameters.PrimaryScreenHeight;
-            if (width > SystemParameters.PrimaryScreenWidth) {
-                window.Width = SystemParameters.PrimaryScreenWidth;
-            } else if(width > window.ActualWidth) {
-                window.Width = width;
-            }
-            if (height > SystemParameters.PrimaryScreenHeight) {
-                window.Height = SystemParameters.PrimaryScreenHeight;
-            } else if(height > window.ActualHeight) {
-                window.Height = height;
-            }
-            Imported_image.Width = bitmap.Width - Math.Max(extraWidth, 0);
-            Imported_image.Height = bitmap.Height - Math.Max(extraHeight, 0);
-            innerGrid.Width = bitmap.Width - Math.Max(extraWidth, 0);
-            innerGrid.Height = bitmap.Height - Math.Max(extraHeight, 0);
+            
+            window.WindowState = WindowState.Maximized;
+
+
+
+
+
+            Trace.WriteLine(bitmap.Width);
+            Trace.WriteLine(innerGrid.ActualWidth);
+            Trace.WriteLine(theGrid.ActualWidth);
+            Trace.WriteLine(theGrid.ActualHeight);
             this.image = bitmap;
         }
 
@@ -153,9 +146,8 @@ namespace osuCollabGenerator
             double selectionBoxLeft = Canvas.GetLeft(selectionBox) - innerGrid.Margin.Left;
             double selectionBoxTop = Canvas.GetTop(selectionBox) - innerGrid.Margin.Top;
             
-            if (selectionBoxLeft < 0)
+            if (selectionBoxLeft < 0 || selectionBoxLeft+selectionBox.Width <0)
             {
-                selectionBox.Width += selectionBoxLeft;
                 Canvas.SetLeft(selectionBox, innerGrid.Margin.Left);
             }
             else
@@ -163,9 +155,8 @@ namespace osuCollabGenerator
                 Canvas.SetLeft(selectionBox, selectionBoxLeft + innerGrid.Margin.Left);
             }
 
-            if (selectionBoxTop < 0)
+            if (selectionBoxTop < 0 || selectionBoxTop + selectionBox.Height < 0)
             {
-                selectionBox.Height += selectionBoxTop;
                 Canvas.SetTop(selectionBox, innerGrid.Margin.Top);
             }
             else
