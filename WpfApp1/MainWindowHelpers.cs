@@ -17,7 +17,9 @@ namespace osuCollabGenerator
             HttpResponseMessage responseMessage = await client.GetAsync(url);
             if (responseMessage.IsSuccessStatusCode)
             {
+
                 string response = await responseMessage.Content.ReadAsStringAsync();
+
                 try
                 {
                     UserCompact[]? users = JsonConvert.DeserializeObject<UserCompact[]>(response);

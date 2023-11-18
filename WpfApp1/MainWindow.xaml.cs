@@ -29,7 +29,7 @@ namespace osuCollabGenerator
                     searchMutex.WaitOne();
                     Trace.WriteLine("Search initiated");
                     usersStack.Children.Clear();
-                    UserCompact[]? users = await MainWindowHelpers.SearchUsers($"https://osu-collab-generator-api.shuttleapp.rs/username/{searchBox.Text}");
+                    UserCompact[]? users = await MainWindowHelpers.SearchUsers($"http://shiratorip.eu.pythonanywhere.com/get-users?query={searchBox.Text}");
                     if (users != null)
                     {
                         List<UserStorage> usersList = new List<UserStorage>(users.Length);
@@ -233,6 +233,9 @@ namespace osuCollabGenerator
                 //currentSelectionCoordinates = null;
             }
         }
+        private void ApplyUser(object sender, RoutedEventArgs e)
+        {
+        }
 
         private int AddButton(BoundingBox boundingBox)
         {
@@ -265,10 +268,11 @@ namespace osuCollabGenerator
                     if (user != null)
                     {
                         BoundingBox coords = userSelectionStorage.BoundingBoxes[i];
-                        double left = (coords.left - innerGrid.Margin.Left) / innerGrid.Width * 100;
-                        double top = (coords.top - innerGrid.Margin.Top) / innerGrid.Height * 100;
-                        double width = (coords.right - coords.left) / innerGrid.Width * 100;
-                        double height = (coords.bottom - coords.top) / innerGrid.Height * 100;
+                        
+                        double left = (coords.left - innerGrid.Margin.Left) / innerGrid.ActualWidth * 100;
+                        double top = (coords.top - innerGrid.Margin.Top) / innerGrid.ActualHeight * 100;
+                        double width = (coords.right - coords.left) / innerGrid.ActualWidth * 100;
+                        double height = (coords.bottom - coords.top) / innerGrid.ActualHeight * 100;
 
                         exportString += $"{left} {top} {width} {height} https://osu.ppy.sh/users/{user.Id} {user.Username}\n";
                     }

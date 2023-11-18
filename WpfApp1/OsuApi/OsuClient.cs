@@ -153,6 +153,12 @@ namespace osuCollabGenerator
         [JsonProperty("id")] public int Id { get; set; }
         [JsonProperty("username")] public string Username { get; set; }
     }
+    public class UserCompactTamu
+    {
+        [JsonProperty("avatar_url")] public string AvatarUrl { get; set; }
+        [JsonProperty("id")] public int Id { get; set; }
+        [JsonProperty("username")] public string Username { get; set; }
+    }
 
     public class UserKudosu
     {
