@@ -13,10 +13,10 @@
 
   <ItemGroup>
     <None Remove="NewFile1.txt" />
+    <None Remove="ocg_bg.png" />
     <None Remove="OsuApi\NewFile1.txt" />
     <None Remove="tile.png" />
     <None Remove="tile1.png" />
-    <None Remove="wallpapersden.com_anime-original-hd-2023_3500x1885.jpg" />
   </ItemGroup>
 
   <ItemGroup>
@@ -24,9 +24,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Resource Include="tile.png" />
-    <Resource Include="tile1.png" />
-    <Resource Include="wallpapersden.com_anime-original-hd-2023_3500x1885.jpg" />
+    <Resource Include="ocg_bg.png" />
   </ItemGroup>
 
 </Project>

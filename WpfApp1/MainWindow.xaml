@@ -28,10 +28,10 @@
                 MouseDown="GridMouseDown"
                 MouseUp="GridMouseUp"
                 MouseMove="GridMouseMove"
-                Margin="0,20,20,20" OpacityMask="Black" Grid.Column="1"
+                Margin="0,20,20,20" OpacityMask="#FF121212" Grid.Column="1"
             >
                 <Canvas.Background>
-                    <ImageBrush TileMode="None" ImageSource="/wallpapersden.com_anime-original-hd-2023_3500x1885.jpg" Stretch="UniformToFill"/>
+                    <ImageBrush TileMode="None" ImageSource="/ocg_bg.png" Stretch="UniformToFill"/>
                 </Canvas.Background>
                 <Grid
                     Name="innerGrid"
